@@ -10,7 +10,8 @@ import {
   Button,
   InputAdornment,
   ClickAwayListener,
-  IconButton
+  IconButton,
+  Backdrop
 } from '@mui/material';
 
 // ----------------------------------------------------------------------
@@ -22,7 +23,7 @@ const SearchbarStyle = styled('div')(({ theme }) => ({
   top: 0,
   left: 0,
   zIndex: 99,
-  width: '100%',
+  width: 'calc(100% - 40px)',
   display: 'flex',
   position: 'absolute',
   alignItems: 'center',
@@ -30,10 +31,34 @@ const SearchbarStyle = styled('div')(({ theme }) => ({
   backdropFilter: 'blur(6px)',
   WebkitBackdropFilter: 'blur(6px)', // Fix on Mobile
   padding: theme.spacing(0, 3),
+  margin: '20px 20px',
   boxShadow: theme.customShadows.z8,
-  backgroundColor: `${alpha(theme.palette.background.default, 0.72)}`,
+  backgroundColor: `${alpha(theme.palette.background.default, 1)}`,
+  borderRadius: '20px',
   [theme.breakpoints.up('md')]: {
     height: APPBAR_DESKTOP,
+    padding: theme.spacing(0, 5)
+  }
+}));
+
+const SearchResultsStyle = styled('div')(({ theme }) => ({
+  left: 0,
+  zIndex: 99,
+  width: 'calc(100% - 40px)',
+  display: 'flex',
+  position: 'absolute',
+  alignItems: 'center',
+  backdropFilter: 'blur(6px)',
+  WebkitBackdropFilter: 'blur(6px)', // Fix on Mobile
+  padding: theme.spacing(0, 3),
+  margin: '20px 20px',
+  boxShadow: theme.customShadows.z8,
+  backgroundColor: `${alpha(theme.palette.background.default, 1)}`,
+  borderRadius: '20px',
+  color: 'black',
+  textAlign: 'center',
+  minHeight: APPBAR_DESKTOP,
+  [theme.breakpoints.up('md')]: {
     padding: theme.spacing(0, 5)
   }
 }));
@@ -60,29 +85,46 @@ export default function Searchbar() {
           </IconButton>
         )}
 
-        <Slide direction="down" in={isOpen} mountOnEnter unmountOnExit>
-          <SearchbarStyle>
-            <Input
-              autoFocus
-              fullWidth
-              disableUnderline
-              placeholder="Search…"
-              startAdornment={
-                <InputAdornment position="start">
-                  <Box
-                    component={Icon}
-                    icon={searchFill}
-                    sx={{ color: 'text.disabled', width: 20, height: 20 }}
-                  />
-                </InputAdornment>
-              }
-              sx={{ mr: 1, fontWeight: 'fontWeightBold' }}
-            />
-            <Button variant="contained" onClick={handleClose}>
-              Search
-            </Button>
-          </SearchbarStyle>
-        </Slide>
+        <Backdrop
+          sx={{ color: '#fff', zIndex: 50, height: '100vh' }}
+          open={isOpen}
+          onClick={handleClose}
+        >
+          <Slide direction="down" in={isOpen} mountOnEnter unmountOnExit>
+            <SearchbarStyle onClick={(e) => e.stopPropagation()}>
+              <Input
+                autoFocus
+                fullWidth
+                disableUnderline
+                placeholder="Search…"
+                startAdornment={
+                  <InputAdornment position="start">
+                    <Box
+                      component={Icon}
+                      icon={searchFill}
+                      sx={{ color: 'text.disabled', width: 20, height: 20 }}
+                    />
+                  </InputAdornment>
+                }
+                sx={{ mr: 1, fontWeight: 'fontWeightBold' }}
+              />
+              <Button
+                variant="contained"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // Search function
+                }}
+              >
+                Search
+              </Button>
+            </SearchbarStyle>
+          </Slide>
+
+          {/* Must be visible only when result count > 0 */}
+          <SearchResultsStyle onClick={(e) => e.stopPropagation()}>
+            <p>Search Results Here ...</p>
+          </SearchResultsStyle>
+        </Backdrop>
       </div>
     </ClickAwayListener>
   );
