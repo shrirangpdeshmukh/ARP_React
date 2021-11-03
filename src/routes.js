@@ -11,6 +11,7 @@ import DashboardApp from './pages/DashboardApp';
 import Products from './pages/Products';
 import Blog from './pages/Blog';
 import User from './pages/User';
+import CoursePage from './pages/CoursePage';
 import NotFound from './pages/Page404';
 
 // ----------------------------------------------------------------------
@@ -29,6 +30,7 @@ export default function Router({ user, updateUser }) {
         { element: <Navigate to="/app" replace /> },
         { path: 'app', element: <DashboardApp /> },
         { path: 'user', element: <User /> },
+        { path: 'course', element: <CoursePage /> },
         { path: 'products', element: <Products /> },
         { path: 'blog', element: <Blog /> }
       ]
