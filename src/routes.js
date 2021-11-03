@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+// react
 import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
 import DashboardLayout from './layouts/dashboard';
@@ -13,11 +15,16 @@ import NotFound from './pages/Page404';
 
 // ----------------------------------------------------------------------
 
-export default function Router() {
+Router.propTypes = {
+  user: PropTypes.object,
+  updateUser: PropTypes.func
+};
+
+export default function Router({ user, updateUser }) {
   return useRoutes([
     {
       path: '/',
-      element: <DashboardLayout />,
+      element: <DashboardLayout user={user} updateUser={updateUser} />,
       children: [
         { element: <Navigate to="/app" replace /> },
         { path: 'app', element: <DashboardApp /> },

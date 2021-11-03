@@ -1,3 +1,5 @@
+// react
+import { useState } from 'react';
 // routes
 import Router from './routes';
 // theme
@@ -10,12 +12,19 @@ import { BaseOptionChartStyle } from './components/charts/BaseOptionChart';
 // ----------------------------------------------------------------------
 
 export default function App() {
+  const [user, setUser] = useState(null);
+
   return (
     <ThemeConfig>
       <ScrollToTop />
       <GlobalStyles />
       <BaseOptionChartStyle />
-      <Router />
+      <Router
+        user={user}
+        updateUser={(el) => {
+          setUser(el);
+        }}
+      />
     </ThemeConfig>
   );
 }

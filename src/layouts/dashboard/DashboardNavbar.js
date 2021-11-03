@@ -1,9 +1,13 @@
 import PropTypes from 'prop-types';
 import { Icon } from '@iconify/react';
 import menu2Fill from '@iconify/icons-eva/menu-2-fill';
+// react
+import { useState, useEffect } from 'react';
 // material
 import { alpha, styled } from '@mui/material/styles';
-import { Box, Stack, AppBar, Toolbar, IconButton } from '@mui/material';
+import { Box, Button, Stack, AppBar, Toolbar, IconButton, CircularProgress } from '@mui/material';
+// google-login
+import GoogleLogin from 'react-google-login';
 // components
 import { MHidden } from '../../components/@material-extend';
 //
@@ -39,10 +43,80 @@ const ToolbarStyle = styled(Toolbar)(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 DashboardNavbar.propTypes = {
-  onOpenSidebar: PropTypes.func
+  onOpenSidebar: PropTypes.func,
+  updateUser: PropTypes.func
 };
 
-export default function DashboardNavbar({ onOpenSidebar }) {
+export default function DashboardNavbar({ onOpenSidebar, updateUser }) {
+  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    updateUser(user);
+  }, [user]);
+
+  const successResponseGoogle = (res) => {
+    console.log(res);
+
+    setUser(res.profileObj);
+    setIsLoading(false);
+  };
+
+  const failureResponseGoogle = (res) => {
+    console.log(res);
+
+    setUser(null);
+    setIsLoading(false);
+  };
+
+  const onAutoLoadFinished = (res) => {
+    console.log(res);
+
+    setIsLoading(false);
+  };
+
+  const AuthBar = () => {
+    if (!user)
+      return (
+        <GoogleLogin
+          className="google-login"
+          clientId="673970648113-sle0qvep0tjdcnfroiqeoetgrbcn8k88.apps.googleusercontent.com"
+          render={(renderProps) => {
+            if (isLoading) return <CircularProgress />;
+            return (
+              <Button onClick={renderProps.onClick} variant="outlined">
+                Log in
+              </Button>
+            );
+          }}
+          isSignedIn
+          onSuccess={successResponseGoogle}
+          onFailure={failureResponseGoogle}
+          cookiePolicy="single_host_origin"
+          icon={false}
+          padding={100}
+          onAutoLoadFinished={onAutoLoadFinished}
+        />
+      );
+
+    return (
+      <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>
+        {/* <LanguagePopover /> */}
+        <NotificationsPopover />
+        <AccountPopover
+          user={{ img: user.imageUrl, name: user.name, email: user.email }}
+          load={() => {
+            setIsLoading(true);
+          }}
+          logout={() => {
+            setUser(null);
+            setIsLoading(false);
+          }}
+        />
+      </Stack>
+    );
+  };
+
   return (
     <RootStyle>
       <ToolbarStyle>
@@ -55,11 +129,7 @@ export default function DashboardNavbar({ onOpenSidebar }) {
         <Searchbar />
         <Box sx={{ flexGrow: 1 }} />
 
-        <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>
-          <LanguagePopover />
-          <NotificationsPopover />
-          <AccountPopover />
-        </Stack>
+        <AuthBar />
       </ToolbarStyle>
     </RootStyle>
   );

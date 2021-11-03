@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { Icon } from '@iconify/react';
 import { useRef, useState } from 'react';
 import homeFill from '@iconify/icons-eva/home-fill';
@@ -7,6 +8,8 @@ import { Link as RouterLink } from 'react-router-dom';
 // material
 import { alpha } from '@mui/material/styles';
 import { Button, Box, Divider, MenuItem, Typography, Avatar, IconButton } from '@mui/material';
+// google-logout
+import { GoogleLogout } from 'react-google-login';
 // components
 import MenuPopover from '../../components/MenuPopover';
 //
@@ -34,7 +37,13 @@ const MENU_OPTIONS = [
 
 // ----------------------------------------------------------------------
 
-export default function AccountPopover() {
+AccountPopover.propTypes = {
+  user: PropTypes.object,
+  load: PropTypes.func,
+  logout: PropTypes.func
+};
+
+export default function AccountPopover({ user, load, logout }) {
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
 
@@ -52,22 +61,24 @@ export default function AccountPopover() {
         onClick={handleOpen}
         sx={{
           padding: 0,
-          width: 44,
-          height: 44,
-          ...(open && {
-            '&:before': {
-              zIndex: 1,
-              content: "''",
-              width: '100%',
-              height: '100%',
-              borderRadius: '50%',
-              position: 'absolute',
-              bgcolor: (theme) => alpha(theme.palette.grey[900], 0.72)
-            }
-          })
+          width: 40,
+          height: 40,
+          '&:before': {
+            transition: 'all 0.2s ease-in-out',
+            boxShadow: (theme) =>
+              open
+                ? `0px 0px 20px 2px ${theme.palette.primary.main}`
+                : `0px 0px 0px 0px ${theme.palette.primary.main}`,
+            zIndex: 1,
+            content: "''",
+            width: '100%',
+            height: '100%',
+            borderRadius: '50%',
+            position: 'absolute'
+          }
         }}
       >
-        <Avatar src={account.photoURL} alt="photoURL" />
+        <Avatar src={user.img} alt="photoURL" />
       </IconButton>
 
       <MenuPopover
@@ -78,10 +89,10 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
           <Typography variant="subtitle1" noWrap>
-            {account.displayName}
+            {user.name}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
+            {user.email}
           </Typography>
         </Box>
 
@@ -109,11 +120,25 @@ export default function AccountPopover() {
           </MenuItem>
         ))}
 
-        <Box sx={{ p: 2, pt: 1.5 }}>
-          <Button fullWidth color="inherit" variant="outlined">
-            Logout
-          </Button>
-        </Box>
+        <GoogleLogout
+          clientId="658977310896-knrl3gka66fldh83dao2rhgbblmd4un9.apps.googleusercontent.com"
+          onLogoutSuccess={logout}
+          render={(renderProps) => (
+            <Box sx={{ p: 2, pt: 1.5 }}>
+              <Button
+                fullWidth
+                color="inherit"
+                variant="outlined"
+                onClick={() => {
+                  load();
+                  renderProps.onClick();
+                }}
+              >
+                Logout
+              </Button>
+            </Box>
+          )}
+        />
       </MenuPopover>
     </>
   );

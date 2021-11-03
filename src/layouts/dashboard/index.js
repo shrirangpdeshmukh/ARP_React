@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+// react
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 // material
@@ -41,13 +43,18 @@ const PaddedStyle = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function DashboardLayout() {
+DashboardLayout.propTypes = {
+  user: PropTypes.object,
+  updateUser: PropTypes.func
+};
+
+export default function DashboardLayout({ user, updateUser }) {
   const [open, setOpen] = useState(false);
 
   return (
     <RootStyle>
-      <DashboardNavbar onOpenSidebar={() => setOpen(true)} />
-      <DashboardSidebar isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} />
+      <DashboardNavbar onOpenSidebar={() => setOpen(true)} updateUser={updateUser} />
+      <DashboardSidebar isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} user={user} />
       <MainStyle>
         <Scrollbar>
           <PaddedStyle>
