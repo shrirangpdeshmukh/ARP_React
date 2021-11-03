@@ -6,6 +6,7 @@ import fileTextFill from '@iconify/icons-eva/file-text-fill';
 import lockFill from '@iconify/icons-eva/lock-fill';
 import personAddFill from '@iconify/icons-eva/person-add-fill';
 import alertTriangleFill from '@iconify/icons-eva/alert-triangle-fill';
+import cloudUploadFill from '@iconify/icons-eva/cloud-upload-fill';
 
 // ----------------------------------------------------------------------
 
@@ -21,6 +22,11 @@ const sidebarConfig = [
     title: 'user',
     path: '/user',
     icon: getIcon(peopleFill)
+  },
+  {
+    title: 'upload',
+    path: '/upload',
+    icon: getIcon(cloudUploadFill)
   },
   {
     title: 'product',
