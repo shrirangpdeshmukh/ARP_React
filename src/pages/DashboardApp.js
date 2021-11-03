@@ -4,18 +4,18 @@ import { Box, Grid, Container, Typography } from '@mui/material';
 import Page from '../components/Page';
 import {
   AppTasks,
-  AppNewUsers,
-  AppBugReports,
-  AppItemOrders,
   AppNewsUpdate,
-  AppWeeklySales,
   AppOrderTimeline,
   AppCurrentVisits,
   AppWebsiteVisits,
   AppTrafficBySite,
   AppCurrentSubject,
-  AppConversionRates
+  AppConversionRates,
+  AppCard
 } from '../components/_dashboard/app';
+
+// data
+import { branches } from '../data';
 
 // ----------------------------------------------------------------------
 
@@ -27,18 +27,16 @@ export default function DashboardApp() {
           <Typography variant="h4">Hi, Welcome back</Typography>
         </Box>
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={6} md={3}>
-            <AppWeeklySales />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <AppNewUsers />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <AppItemOrders />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <AppBugReports />
-          </Grid>
+          {branches.map((branch) => (
+            <Grid item xs={12} sm={6} md={3} key={branch.title}>
+              <AppCard
+                color={branch.color}
+                icon={branch.icon}
+                title={branch.title}
+                subtitle={branch.subtitle}
+              />
+            </Grid>
+          ))}
 
           <Grid item xs={12} md={6} lg={8}>
             <AppWebsiteVisits />
