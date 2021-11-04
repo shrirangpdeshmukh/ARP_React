@@ -20,7 +20,16 @@ import {
   CardHeader,
   Grid,
   IconButton,
-  Tooltip
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogActions,
+  DialogContent,
+  Box,
+  MenuItem,
+  FormControl,
+  Select,
+  InputLabel
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 // components
@@ -38,15 +47,86 @@ const TABLE_HEAD = [
   { id: '' }
 ];
 
+const FLAG_OPTIONS = [
+  { value: 'irrelevant', label: 'The file is irrelevant' },
+  { value: 'duplicate', label: 'The file is duplicated' },
+  { value: 'unclear', label: 'The file is not clear' },
+  { value: 'explict', label: 'The file is explict' }
+];
+
 const ColorButton = styled(IconButton)(({ theme, color = 'primary' }) => ({
   backgroundColor: theme.palette[color].lighter,
-  padding: '4px',
+  padding: '7px',
   '&:hover': {
     backgroundColor: theme.palette[color].light
   }
 }));
 
-const TypeCard = ({ details }) => {
+const FlagDialog = ({ flagFile, handleClose, open }) => {
+  const [reason, setReason] = useState('');
+
+  if (open && flagFile && flagFile.title && flagFile.file) {
+    return (
+      <Dialog
+        open={open}
+        onClose={() => {
+          handleClose();
+          setReason('');
+        }}
+      >
+        <DialogTitle>Flag File</DialogTitle>
+        <DialogContent>
+          <Typography variant="subtitle2">{`${flagFile.title}: ${flagFile.file.sem}`}</Typography>
+          <br />
+          <Box py={1} sx={{ display: 'flex' }}>
+            <FormControl fullWidth required>
+              <InputLabel id="">Flag Reason</InputLabel>
+              <Select
+                autoWidth
+                displayEmpty
+                variant="filled"
+                labelId="flag-reason"
+                id="flagReason"
+                value={reason}
+                label="Reason"
+                onChange={(e) => {
+                  setReason(e.target.value);
+                }}
+              >
+                {FLAG_OPTIONS.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              handleClose();
+              setReason('');
+            }}
+          >
+            OK
+          </Button>
+          <Button
+            onClick={() => {
+              handleClose();
+              setReason('');
+            }}
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+  }
+  return null;
+};
+
+const TypeCard = ({ details, flagFileSet, handleOpen }) => {
   if (details.array.length > 0) {
     return (
       <Grid item xs={12} sm={6} md={6} padding={1}>
@@ -81,7 +161,12 @@ const TypeCard = ({ details }) => {
 
                       <TableCell padding="none" align="center">
                         <Tooltip title="Click here to report this file." placement="right">
-                          <ColorButton>
+                          <ColorButton
+                            onClick={() => {
+                              flagFileSet({ title: details.title, file: row });
+                              handleOpen();
+                            }}
+                          >
                             <Icon icon={flag} width={18} height={18} />
                           </ColorButton>
                         </Tooltip>
@@ -113,6 +198,20 @@ export default function CoursePage({
     tutorial: { array: [], title: 'Tutorials' },
     other: { array: [], title: 'Others' }
   });
+  const [flagDialogOpen, setFlagDialogOpen] = useState(false);
+  const [flagFile, setFlagFile] = useState({ title: null, file: null });
+
+  const openDialog = () => {
+    setFlagDialogOpen(true);
+  };
+  const closeDialog = () => {
+    setFlagDialogOpen(false);
+    setFlagFile({ title: null, file: null });
+  };
+
+  const flagFileSet = (newFlagFile) => {
+    setFlagFile(newFlagFile);
+  };
 
   const seperatePapers = () => {
     const newCards = { ...cards };
@@ -145,9 +244,17 @@ export default function CoursePage({
             {Object.entries(cards).map((type) => {
               const details = type[1];
               const key = type[0];
-              return <TypeCard details={details} key={key} />;
+              return (
+                <TypeCard
+                  details={details}
+                  key={key}
+                  handleOpen={openDialog}
+                  flagFileSet={flagFileSet}
+                />
+              );
             })}
           </Grid>
+          <FlagDialog open={flagDialogOpen} handleClose={closeDialog} flagFile={flagFile} />
         </Scrollbar>
       </Container>
     </Page>
