@@ -23,12 +23,12 @@ const RootStyle = styled('div')({
 const MainStyle = styled('div')(({ theme }) => ({
   flexGrow: 1,
   overflow: 'auto',
-  height: `calc(100vh - ${APP_BAR_MOBILE}px - 24)`,
-  marginTop: APP_BAR_MOBILE + 24,
+  height: `calc(100vh - ${APP_BAR_MOBILE}px - 12)`,
+  marginTop: APP_BAR_MOBILE + 12,
   // paddingBottom: theme.spacing(10),
   [theme.breakpoints.up('lg')]: {
-    height: `calc(100vh - ${APP_BAR_DESKTOP}px - 24)`,
-    marginTop: APP_BAR_DESKTOP + 24
+    height: `calc(100vh - ${APP_BAR_DESKTOP}px - 12)`,
+    marginTop: APP_BAR_DESKTOP + 12
     // paddingLeft: theme.spacing(2),
     // paddingRight: theme.spacing(2)
   }

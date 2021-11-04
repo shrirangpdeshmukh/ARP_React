@@ -13,6 +13,7 @@ import Blog from './pages/Blog';
 import User from './pages/User';
 import CoursePage from './pages/CoursePage';
 import BranchPage from './pages/BranchPage';
+import Upload from './pages/Upload';
 import NotFound from './pages/Page404';
 
 // ----------------------------------------------------------------------
@@ -33,6 +34,7 @@ export default function Router({ user, updateUser }) {
         { path: 'user', element: <User /> },
         { path: 'branch', element: <BranchPage /> },
         { path: 'course', element: <CoursePage /> },
+        { path: 'upload', element: <Upload /> },
         { path: 'products', element: <Products /> },
         { path: 'blog', element: <Blog /> }
       ]

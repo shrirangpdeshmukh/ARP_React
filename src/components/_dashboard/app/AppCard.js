@@ -68,7 +68,10 @@ export default function AppCard({ color, icon, title, subtitle }) {
         <Icon icon={iconMap.get(icon)} width={24} height={24} />
       </IconWrapperStyle>
       <Typography variant="h3">{title}</Typography>
-      <Typography variant="subtitle2" sx={{ opacity: 0.72 }}>
+      <Typography
+        variant="subtitle2"
+        sx={{ opacity: 0.72, height: '30px', paddingLeft: '10px', paddingRight: '10px' }}
+      >
         {subtitle}
       </Typography>
     </RootStyle>
