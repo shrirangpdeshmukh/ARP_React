@@ -1,10 +1,10 @@
+import PropTypes from 'prop-types';
 import { filter } from 'lodash';
 import { Icon } from '@iconify/react';
 import { useState } from 'react';
 import plusFill from '@iconify/icons-eva/plus-fill';
 import { Link as RouterLink } from 'react-router-dom';
 import searchFill from '@iconify/icons-eva/search-fill';
-// import PropTypes from 'prop-types';
 // material
 import { styled } from '@mui/material/styles';
 import {
@@ -63,11 +63,11 @@ const TABLE_HEAD = [
 
 // ----------------------------------------------------------------------
 
-// CoursePage.propTypes = {
-//   branch: PropTypes.oneOf(branchesArray),
-//   branchCode: PropTypes.oneOf(branchCodesArray),
-//   courses: PropTypes.array
-// };
+BranchPage.propTypes = {
+  branch: PropTypes.string.isRequired,
+  branchCode: PropTypes.string.isRequired,
+  courses: PropTypes.array
+};
 
 export default function BranchPage({
   branchCode = 'CSE',
