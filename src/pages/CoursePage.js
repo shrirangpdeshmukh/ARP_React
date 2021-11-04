@@ -103,7 +103,7 @@ const TypeCard = ({ details }) => {
 export default function CoursePage({
   branchCode = 'CSE',
   courseCode = 'CS1L001',
-  courseName = 'Introduction to Prgoramming and Data Structures'
+  courseName = 'Introduction to Programming and Data Structures'
 }) {
   const [cards, setCards] = useState({
     endsem: { array: [], title: 'End Semester' },

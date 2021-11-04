@@ -160,14 +160,14 @@ export default function Upload() {
             </Box>
           </Box>
 
-          {/* {file ? (
+          {file ? (
             <Box
               px={2}
               sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexGrow: 1 }}
             >
               <FilePreview file={file} />
             </Box>
-          ) : null} */}
+          ) : null}
         </Box>
 
         <Box sx={{ textAlign: 'right' }}>
