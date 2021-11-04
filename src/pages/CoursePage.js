@@ -40,6 +40,7 @@ const TABLE_HEAD = [
 
 const ColorButton = styled(IconButton)(({ theme, color = 'primary' }) => ({
   backgroundColor: theme.palette[color].lighter,
+  padding: '4px',
   '&:hover': {
     backgroundColor: theme.palette[color].light
   }
@@ -72,13 +73,13 @@ const TypeCard = ({ details }) => {
                         <Typography variant="subtitle2" noWrap>
                           {sem}
                         </Typography>
-                        <Typography variant="subtitle3" noWrap>
-                          {description}
-                        </Typography>
+                        <Typography variant="subtitle3">{description}</Typography>
                       </TableCell>
-                      <TableCell align="left">{date}</TableCell>
+                      <TableCell align="left" noWrap>
+                        {date}
+                      </TableCell>
 
-                      <TableCell padding={0} align="left">
+                      <TableCell padding="none" align="center">
                         <Tooltip title="Click here to report this file." placement="right">
                           <ColorButton>
                             <Icon icon={flag} width={18} height={18} />
