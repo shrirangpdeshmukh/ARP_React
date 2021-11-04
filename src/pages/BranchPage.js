@@ -69,7 +69,7 @@ const TABLE_HEAD = [
 //   courses: PropTypes.array
 // };
 
-export default function CoursePage({
+export default function BranchPage({
   branchCode = 'CSE',
   branch = 'Computer Science and Engineering',
   courses = USERLIST_
