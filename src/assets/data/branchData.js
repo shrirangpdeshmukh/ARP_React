@@ -65,7 +65,8 @@ export const branches = [
   { show: true, color: 'secondary', icon: 'others', title: 'Others', subtitle: 'IDT Courses' },
   { show: false, title: 'MA', subtitle: 'Maths', code: 'MA' },
   { show: false, title: 'PH', subtitle: 'Physics', code: 'PH' },
-  { show: false, title: 'CY', subtitle: 'Chemistry', code: 'CY' }
+  { show: false, title: 'CY', subtitle: 'Chemistry', code: 'CY' },
+  { show: false, title: 'ID', subtitle: 'IDT Courses', code: 'ID' }
 ];
 
 // const options = [];

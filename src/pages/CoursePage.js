@@ -177,7 +177,6 @@ export default function CoursePage() {
     //     console.log(err);
     //   });
 
-    console.log(branch, id);
     let index = -1;
     let ind = -1;
     index = courseData.findIndex((el) => {
@@ -185,7 +184,6 @@ export default function CoursePage() {
       return ind >= 0;
     });
 
-    console.log(index, ind);
     if (index < 0 || ind < 0) navigate('/404', { replace: 'true' });
     else {
       setCourseName(courseData[index].courses[ind].subjectName);
@@ -235,6 +233,7 @@ export default function CoursePage() {
               variant="contained"
               component={RouterLink}
               to="/upload"
+              state={{ courseName, courseCode }}
               startIcon={<Icon icon={plusFill} />}
             >
               Add

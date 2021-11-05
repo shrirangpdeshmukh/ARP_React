@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 // react
-import { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { useState, useRef, useEffect } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
 // material
 import { styled } from '@mui/material/styles';
 //
@@ -50,6 +50,13 @@ DashboardLayout.propTypes = {
 
 export default function DashboardLayout({ user, updateUser }) {
   const [open, setOpen] = useState(false);
+  const compRef = useRef(null);
+
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    compRef.current.scrollIntoView();
+  }, [pathname]);
 
   return (
     <RootStyle>
@@ -57,7 +64,7 @@ export default function DashboardLayout({ user, updateUser }) {
       <DashboardSidebar isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} user={user} />
       <MainStyle>
         <Scrollbar>
-          <PaddedStyle>
+          <PaddedStyle ref={compRef}>
             <Outlet />
           </PaddedStyle>
         </Scrollbar>
