@@ -37,6 +37,7 @@ import Scrollbar from '../components/Scrollbar';
 import SearchNotFound from '../components/SearchNotFound';
 
 import { branches } from '../assets/data/branchData';
+import courseData from '../assets/data/courseData.json';
 
 // ----------------------------------------------------------------------
 
@@ -120,25 +121,34 @@ export default function BranchPage() {
   }, [courses]);
 
   const getCourses = (course) => {
-    axios
-      .get(`https://arpbackend-df561.firebaseapp.com/studyResources/branches/${course}`)
-      .then((res) => {
-        if (res.data.length > 0) setCourses(res.data);
-        else setFetched(true);
-      })
-      .catch((err) => {
-        console.log(err);
-        setFetched(true);
-      });
+    // axios
+    //   .get(`https://arpbackend-df561.firebaseapp.com/studyResources/branches/${course}`)
+    //   .then((res) => {
+    //     console.log(res.data);
+
+    //     if (res.data.length > 0) setCourses(res.data);
+    //     else setFetched(true);
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //     setFetched(true);
+    //   });
+    const index = courseData.findIndex((el) => el.course === course);
+    if (index >= 0) setCourses(courseData[index].courses);
+    setFetched(true);
   };
 
   useEffect(() => {
     const url = window.location.pathname;
     const courseStr = url.split('/')[2];
-    const index = branches.findIndex((el) => el.icon === courseStr);
+    const index = branches.findIndex((el) => el.title.toUpperCase() === courseStr.toUpperCase());
 
     if (index < 0) navigate('/404', { replace: true });
-    else getCourses(branches[index].code);
+    else {
+      setBranch(branches[index].subtitle);
+      setBranchCode(branches[index].title);
+      getCourses(branches[index].title);
+    }
   }, []);
 
   return (

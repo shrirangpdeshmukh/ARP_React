@@ -27,17 +27,21 @@ export default function DashboardApp() {
           <Typography variant="h4">Hi, Welcome back</Typography>
         </Box>
         <Grid container spacing={3}>
-          {branches.map((branch) => (
-            <Grid item xs={12} sm={6} md={3} key={branch.title}>
-              <AppCard
-                color={branch.color}
-                icon={branch.icon}
-                title={branch.title}
-                subtitle={branch.subtitle}
-                code={branch.code}
-              />
-            </Grid>
-          ))}
+          {branches.map((branch) => {
+            if (!branch.show) return null;
+
+            return (
+              <Grid item xs={12} sm={6} md={3} key={branch.title}>
+                <AppCard
+                  color={branch.color}
+                  icon={branch.icon}
+                  title={branch.title}
+                  subtitle={branch.subtitle}
+                  code={branch.code}
+                />
+              </Grid>
+            );
+          })}
 
           <Grid item xs={12} md={6} lg={8}>
             <AppWebsiteVisits />

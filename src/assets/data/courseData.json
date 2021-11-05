@@ -1,0 +1,359 @@
+[
+  {
+    "course": "CSE",
+    "courses": [
+      {
+        "subjectName": "Programming Data Structures",
+        "subjectCode": "CS1L001"
+      },
+      {
+        "subjectName": "Programming and Data Structures Laboratory",
+        "subjectCode": "CS1P001"
+      },
+      {
+        "subjectName": "Discrete Structures",
+        "subjectCode": "CS2L001"
+      },
+      {
+        "subjectName": "Design And Analysis Of Algorithms",
+        "subjectCode": "CS2L002"
+      },
+      {
+        "subjectName": "Digital Logic and Systems",
+        "subjectCode": "CS2L003"
+      },
+      {
+        "subjectName": "Data Structures",
+        "subjectCode": "CS2L0XX"
+      },
+      {
+        "subjectName": "Computer Networks",
+        "subjectCode": "CS3L006"
+      }
+    ]
+  },
+  {
+    "course": "CE",
+    "courses": [
+      {
+        "subjectName": "Solid Mechanics-2nd Year",
+        "subjectCode": "CE2L001"
+      },
+      {
+        "subjectName": "Surveying",
+        "subjectCode": "CE2L002"
+      },
+      {
+        "subjectName": "Civil And Construction Materials",
+        "subjectCode": "CE2L003"
+      },
+      {
+        "subjectName": "Structural Analysis",
+        "subjectCode": "CE2L004"
+      },
+      {
+        "subjectName": "Hydraulics",
+        "subjectCode": "CE2L005"
+      },
+      {
+        "subjectName": "Transportation Engineering",
+        "subjectCode": "CE2L006"
+      },
+      {
+        "subjectName": "Infrastructure, Planning and Management",
+        "subjectCode": "CE2L012"
+      },
+      {
+        "subjectName": "Reinforced Concrete Structures",
+        "subjectCode": "CE3L001"
+      },
+      {
+        "subjectName": "Solid Mechanics-3rd Year",
+        "subjectCode": "CE3L002"
+      },
+      {
+        "subjectName": "Water Resources Engineering",
+        "subjectCode": "CE3L003"
+      }
+    ]
+  },
+  {
+    "course": "ECE",
+    "courses": [
+      {
+        "subjectName": "Introduction To Electronics",
+        "subjectCode": "EC2L001"
+      },
+      {
+        "subjectName": "Signals And System",
+        "subjectCode": "EC2L002"
+      },
+      {
+        "subjectName": "Digital Electronics Circuits",
+        "subjectCode": "EC2L004"
+      },
+      {
+        "subjectName": "Basic Electronics",
+        "subjectCode": "EC2L005"
+      },
+      {
+        "subjectName": "Digital Electronics And Microprocessors",
+        "subjectCode": "EC2L006"
+      },
+      {
+        "subjectName": "Introduction To Signal Processing",
+        "subjectCode": "EC2L008"
+      },
+      {
+        "subjectName": "Analog Communication",
+        "subjectCode": "EC2L009"
+      }
+    ]
+  },
+  {
+    "course": "EE",
+    "courses": [
+      {
+        "subjectName": "Electrical Technology",
+        "subjectCode": "EE1L001"
+      },
+      {
+        "subjectName": "Network Theory",
+        "subjectCode": "EE2L001"
+      },
+      {
+        "subjectName": "Electrical Machines",
+        "subjectCode": "EE2L003"
+      },
+      {
+        "subjectName": "Introduction To Electomagnetic Engneering",
+        "subjectCode": "EE2L004"
+      },
+      {
+        "subjectName": "Electrical Power Transmission and Distribution",
+        "subjectCode": "EE3L007"
+      },
+      {
+        "subjectName": "Utilization Of Electrical Power",
+        "subjectCode": "EE3L009"
+      },
+      {
+        "subjectName": "Measurement and Instrumentation",
+        "subjectCode": "EE3L010"
+      }
+    ]
+  },
+  {
+    "course": "ME",
+    "courses": [
+      {
+        "subjectName": "Mechanics",
+        "subjectCode": "ME1L001"
+      },
+      {
+        "subjectName": "Introduction To Manufacturing Processes",
+        "subjectCode": "ME1P001"
+      },
+      {
+        "subjectName": "Theory Of Machines-1",
+        "subjectCode": "ME2L001"
+      },
+      {
+        "subjectName": "Fluid Mechanics",
+        "subjectCode": "ME2L002"
+      },
+      {
+        "subjectName": "Thermodynamics",
+        "subjectCode": "ME2L003"
+      },
+      {
+        "subjectName": "Mechanics Of Solids",
+        "subjectCode": "ME2L004"
+      },
+      {
+        "subjectName": "Theory Of Machines-2",
+        "subjectCode": "ME2L005"
+      },
+      {
+        "subjectName": "Elements of Mechanical Engineering",
+        "subjectCode": "ME2L501"
+      },
+      {
+        "subjectName": "Internal Combustion Engines",
+        "subjectCode": "ME3L005"
+      },
+      {
+        "subjectName": "Refrigeration And Air Conditioning",
+        "subjectCode": "ME3L006"
+      },
+      {
+        "subjectName": "Machine Tool And Machining",
+        "subjectCode": "ME3L007"
+      },
+      {
+        "subjectName": "Power Plant Engineering",
+        "subjectCode": "ME3L008"
+      },
+      {
+        "subjectName": "Computational Fluid Dynamics",
+        "subjectCode": "ME3L013"
+      },
+      {
+        "subjectName": "Robotics",
+        "subjectCode": "ME3L014"
+      },
+      {
+        "subjectName": "Applied Thermodynamics",
+        "subjectCode": "ME3L501"
+      },
+      {
+        "subjectName": "Quality Control ",
+        "subjectCode": "ME4L010"
+      },
+      {
+        "subjectName": "Advanced Fluid Dynamics",
+        "subjectCode": "ME6L001"
+      }
+    ]
+  },
+  {
+    "course": "MME",
+    "courses": [
+      {
+        "subjectName": "Materials Processing",
+        "subjectCode": "ML2L003"
+      },
+      {
+        "subjectName": "Transport Phenomena And Kinetics of Metallurgical Processes",
+        "subjectCode": "ML2L004"
+      },
+      {
+        "subjectName": "Physical Metallurgy",
+        "subjectCode": "ML2L005"
+      },
+      {
+        "subjectName": "Introduction to Biomaterials",
+        "subjectCode": "ML2L007"
+      },
+      {
+        "subjectName": "Recent Advances In Composite Materials",
+        "subjectCode": "ML3L011"
+      }
+    ]
+  },
+  {
+    "course": "SBS",
+    "courses": [
+      {
+        "subjectName": "Maths-1",
+        "subjectCode": "MA1L001"
+      },
+      {
+        "subjectName": "Maths-2",
+        "subjectCode": "MA1L002"
+      },
+      {
+        "subjectName": "Probability,Statistics And Stocastic Processes",
+        "subjectCode": "MA2L003"
+      },
+      {
+        "subjectName": "Partial Differential Equations",
+        "subjectCode": "MA2L004"
+      },
+      {
+        "subjectName": "Transform Calculus",
+        "subjectCode": "MA2L005"
+      },
+      {
+        "subjectName": "Combinatorics, Probability and Statistics",
+        "subjectCode": "MA2L006"
+      },
+      {
+        "subjectName": "Physics",
+        "subjectCode": "PH1L001"
+      },
+      {
+        "subjectName": "Chemistry",
+        "subjectCode": "CY1L001"
+      }
+    ]
+  },
+  {
+    "course": "SEOCS",
+    "courses": []
+  },
+  {
+    "course": "SHSS&M",
+    "courses": [
+      {
+        "subjectName": "English For Communication",
+        "subjectCode": "HS1L001"
+      },
+      {
+        "subjectName": "Learning English",
+        "subjectCode": "HS1L002"
+      },
+      {
+        "subjectName": "Speaking And Presentation",
+        "subjectCode": "HS2L002"
+      },
+      {
+        "subjectName": "Social Psychology",
+        "subjectCode": "HS2L003"
+      },
+      {
+        "subjectName": "Introduction To Economics",
+        "subjectCode": "HS2L007"
+      },
+      {
+        "subjectName": "Managerial Economics",
+        "subjectCode": "HS3L003"
+      },
+      {
+        "subjectName": "Financial Management",
+        "subjectCode": "HS4L003"
+      },
+      {
+        "subjectName": "Current Affairs And General Studies",
+        "subjectCode": "HS2L005"
+      },
+      {
+        "subjectName": "Understanding Human Behaviour",
+        "subjectCode": "HS4L005"
+      },
+      {
+        "subjectName": "International Business",
+        "subjectCode": "HS2L001"
+      }
+    ]
+  },
+  {
+    "course": "Others",
+    "courses": [
+      {
+        "subjectName": "Introduction To Bioscience And Technology",
+        "subjectCode": "ID2L002"
+      },
+      {
+        "subjectName": "Environmental Science Technology And Management",
+        "subjectCode": "ID2L003"
+      },
+      {
+        "subjectName": "Environmental Science Technology And Management",
+        "subjectCode": "ID3L003"
+      },
+      {
+        "subjectName": "Chaos In Dynamical Systems",
+        "subjectCode": "ID6L003"
+      },
+      {
+        "subjectName": "Introduction To Material Science And Engineering",
+        "subjectCode": "ID2L001"
+      },
+      {
+        "subjectName": "Environmental Science, Technology and Management",
+        "subjectCode": "ID3L002"
+      }
+    ]
+  }
+]

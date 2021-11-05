@@ -33,10 +33,11 @@ import flag from '@iconify/icons-bi/flag';
 // components
 import Page from '../components/Page';
 import Scrollbar from '../components/Scrollbar';
-
-import { branches } from '../assets/data/branchData';
 //
 import USERLIST from '../_mocks_/user';
+
+import { branches } from '../assets/data/branchData';
+import courseData from '../assets/data/courseData.json';
 
 // ----------------------------------------------------------------------
 
@@ -106,8 +107,13 @@ const TypeCard = ({ details }) => {
                         </TableCell>
 
                         <TableCell align="left" style={{ width: '80px' }}>
-                          <Tooltip title="Click here to report this file." placement="right">
-                            <ColorButton>
+                          <Tooltip title="Report resource" placement="right">
+                            <ColorButton
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                event.preventDefault();
+                              }}
+                            >
                               <Icon icon={flag} width={18} height={18} />
                             </ColorButton>
                           </Tooltip>
@@ -146,7 +152,6 @@ export default function CoursePage() {
   });
 
   const seperatePapers = () => {
-    console.log(resources);
     const newCards = { ...cards };
     resources.forEach((paper) => newCards[paper.type].array.push(paper));
     setCards(newCards);
@@ -155,22 +160,38 @@ export default function CoursePage() {
   };
 
   const checkCourse = (branch, id) => {
-    axios
-      .get(`https://arpbackend-df561.firebaseapp.com/studyResources/branches/${branch}`)
-      .then((res) => {
-        const index = res.data.findIndex((el) => el.subjectCode === id.toUpperCase());
-        if (index < 0) navigate('/404', { replace: 'true' });
-        else {
-          setCourseName(res.data[index].subjectName);
-          setCourseCode(res.data[index].subjectCode);
-          getResources(branch, id);
+    // axios
+    //   .get(`https://arpbackend-df561.firebaseapp.com/studyResources/branches/${branch}`)
+    //   .then((res) => {
+    //     const index = res.data.findIndex((el) => el.subjectCode === id.toUpperCase());
+    //     if (index < 0) navigate('/404', { replace: 'true' });
+    //     else {
+    //       setCourseName(res.data[index].subjectName);
+    //       setCourseCode(res.data[index].subjectCode);
+    //       getResources(branch, id);
 
-          setLoadMsg('Fetching Resources ...');
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    //       setLoadMsg('Fetching Resources ...');
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
+
+    console.log(branch, id);
+    let index = -1;
+    let ind = -1;
+    index = courseData.findIndex((el) => {
+      ind = el.courses.findIndex((elem) => elem.subjectCode === id);
+      return ind >= 0;
+    });
+
+    console.log(index, ind);
+    if (index < 0 || ind < 0) navigate('/404', { replace: 'true' });
+    else {
+      setCourseName(courseData[index].courses[ind].subjectName);
+      setCourseCode(courseData[index].courses[ind].subjectCode);
+      getResources(branch, id);
+    }
   };
 
   const getResources = (branch, id) => {
@@ -189,13 +210,13 @@ export default function CoursePage() {
   useEffect(() => {
     const url = window.location.pathname;
     const code = url.split('/')[2];
-    console.log(code);
+
     const index = branches.findIndex(
-      (el) => el.code.toLowerCase() === code.substr(0, 2).toLowerCase()
+      (el) => el.code && el.code.toLowerCase() === code.substr(0, 2).toLowerCase()
     );
 
     if (index < 0) navigate('/404', { replace: true });
-    else checkCourse(branches[index].code, code);
+    else checkCourse(branches[index].code, code.toUpperCase());
   }, []);
 
   useEffect(() => {

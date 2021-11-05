@@ -132,11 +132,11 @@ export default function User() {
   const isUserNotFound = filteredUsers.length === 0;
 
   return (
-    <Page title="User | Minimal-UI">
+    <Page title="User | ARP">
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            User
+            Administrators
           </Typography>
           <Button
             variant="contained"
@@ -148,7 +148,7 @@ export default function User() {
           </Button>
         </Stack>
 
-        <Card>
+        <Card sx={{ mb: 5 }}>
           <UserListToolbar
             numSelected={selected.length}
             filterName={filterName}

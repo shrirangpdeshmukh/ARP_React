@@ -37,28 +37,23 @@ export default function Router({ user, updateUser }) {
         { path: 'branch/:name', element: <BranchPage /> },
         { path: 'course/:code', element: <CoursePage /> },
         { path: 'upload', element: <Upload /> },
-        { path: 'products', element: <Products /> },
-        { path: 'blog', element: <Blog /> }
+        { path: 'admin/unreviewed', element: <AdminUnreviewed /> },
+        { path: 'admin/flagged', element: <AdminFlagged /> },
+        { path: '*', element: <Navigate to="/404" replace /> },
+        { path: '404', element: <NotFound /> }
+        // { path: 'products', element: <Products /> },
+        // { path: 'blog', element: <Blog /> }
       ]
-    },
-    {
-      path: '/',
-      element: <LogoOnlyLayout />,
-      children: [
-        { path: 'login', element: <Login /> },
-        { path: 'register', element: <Register /> },
-        { path: '404', element: <NotFound /> },
-        { path: '/', element: <Navigate to="/" /> }
-      ]
-    },
-    {
-      path: '/admin',
-      element: <DashboardLayout user={user} updateUser={updateUser} />,
-      children: [
-        { path: 'unreviewed', element: <AdminUnreviewed /> },
-        { path: 'flagged', element: <AdminFlagged /> }
-      ]
-    },
-    { path: '*', element: <Navigate to="/404" replace /> }
+    }
+    // {
+    //   path: '/',
+    //   element: <LogoOnlyLayout />,
+    //   children: [
+    //     { path: 'login', element: <Login /> },
+    //     { path: 'register', element: <Register /> },
+    //     { path: '/', element: <Navigate to="/" /> }
+    //   ]
+    // },
+    // { path: '*', element: <Navigate to="/404" replace /> }
   ]);
 }

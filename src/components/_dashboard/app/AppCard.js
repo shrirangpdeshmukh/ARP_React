@@ -61,7 +61,7 @@ const iconMap = new Map([
   ['sbs', scienceOutlined],
   ['seocs', earthAmericaO],
   ['shssm', humanResoruces],
-  ['other', bookIcon]
+  ['others', bookIcon]
 ]);
 
 // ----------------------------------------------------------------------

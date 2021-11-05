@@ -21,47 +21,47 @@ const sidebarConfig = [
     icon: getIcon(pieChart2Fill)
   },
   {
-    title: 'user',
-    path: '/user',
-    icon: getIcon(peopleFill)
-  },
-  {
     title: 'upload',
     path: '/upload',
     icon: getIcon(cloudUploadFill)
   },
   {
-    title: 'product',
-    path: '/products',
-    icon: getIcon(shoppingBagFill)
+    title: 'manage admin',
+    path: '/user',
+    icon: getIcon(peopleFill)
   },
+  // {
+  //   title: 'product',
+  //   path: '/products',
+  //   icon: getIcon(shoppingBagFill)
+  // },
+  // {
+  //   title: 'blog',
+  //   path: '/blog',
+  //   icon: getIcon(fileTextFill)
+  // },
+  // {
+  //   title: 'login',
+  //   path: '/login',
+  //   icon: getIcon(lockFill)
+  // },
+  // {
+  //   title: 'register',
+  //   path: '/register',
+  //   icon: getIcon(personAddFill)
+  // },
+  // {
+  //   title: 'Not found',
+  //   path: '/404',
+  //   icon: getIcon(alertTriangleFill)
+  // },
   {
-    title: 'blog',
-    path: '/blog',
-    icon: getIcon(fileTextFill)
-  },
-  {
-    title: 'login',
-    path: '/login',
-    icon: getIcon(lockFill)
-  },
-  {
-    title: 'register',
-    path: '/register',
-    icon: getIcon(personAddFill)
-  },
-  {
-    title: 'Not found',
-    path: '/404',
-    icon: getIcon(alertTriangleFill)
-  },
-  {
-    title: 'Review Resources',
+    title: 'review resources',
     path: '/admin/unreviewed',
     icon: getIcon(baselineRateReview)
   },
   {
-    title: 'Review Flags',
+    title: 'review flags',
     path: '/admin/flagged',
     icon: getIcon(bxsFlag)
   }
