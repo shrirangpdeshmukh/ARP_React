@@ -57,8 +57,8 @@ const SearchStyle = styled(OutlinedInput)(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'courseId', label: 'Course ID' },
-  { id: 'courseName', label: 'Course Name' }
+  { id: 'courseId', label: 'Course ID', width: '40%' },
+  { id: 'courseName', label: 'Course Name', width: '60%' }
 ];
 
 // ----------------------------------------------------------------------
@@ -149,7 +149,13 @@ export default function BranchPage({
                 <TableHead>
                   <TableRow>
                     {TABLE_HEAD.map((headCell) => (
-                      <TableCell key={headCell.id} align="left">
+                      <TableCell
+                        key={headCell.id}
+                        align="left"
+                        width={headCell.width}
+                        style={{ paddingLeft: '10%', paddingRight: '10%' }}
+                        sx={{ padding: 'normal' }}
+                      >
                         {headCell.label}
                       </TableCell>
                     ))}
@@ -162,14 +168,23 @@ export default function BranchPage({
                       const { id, courseName, courseId } = row;
                       return (
                         <TableRow hover key={id} tabIndex={-1} role="checkbox">
-                          <TableCell component="th" scope="row" padding="normal">
-                            <Stack direction="row" alignItems="center" spacing={2}>
-                              <Typography variant="subtitle2" noWrap>
-                                {courseId}
-                              </Typography>
-                            </Stack>
+                          <TableCell
+                            component="th"
+                            scope="row"
+                            style={{ paddingLeft: '10%', paddingRight: '10%' }}
+                            sx={{ padding: 'normal' }}
+                          >
+                            <Typography variant="subtitle2" noWrap>
+                              {courseId}
+                            </Typography>
                           </TableCell>
-                          <TableCell align="left">{courseName}</TableCell>
+                          <TableCell
+                            align="left"
+                            style={{ paddingLeft: '10%', paddingRight: '10%' }}
+                            sx={{ padding: 'normal' }}
+                          >
+                            {courseName}
+                          </TableCell>
                         </TableRow>
                       );
                     })}
