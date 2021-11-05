@@ -1,5 +1,7 @@
 // react
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+//
+import { useLocation } from 'react-router-dom';
 // material
 import { Button, Container, Typography, TextField, MenuItem, Box } from '@mui/material';
 // components
@@ -28,6 +30,8 @@ for (let i = new Date().getFullYear(); i > 2015; i -= 1) {
 }
 
 export default function Upload() {
+  const { state } = useLocation();
+
   const [file, setFile] = useState(null);
 
   const [data, setData] = useState({
@@ -50,6 +54,17 @@ export default function Upload() {
     curr[el] = e.target.value;
     setData(curr);
   };
+
+  useEffect(() => {
+    if (state) {
+      const curr = { ...data };
+      curr.course = state.courseName;
+      curr.id = state.courseCode;
+      setData(curr);
+
+      window.history.replaceState(null, document.title);
+    }
+  }, []);
 
   return (
     <Page title="Upload | ARP">
@@ -112,11 +127,35 @@ export default function Upload() {
         <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
           <Box sx={{ display: 'flex', flexDirection: 'column' }} py={5}>
             <Box py={1}>
-              <TextField label="Course name" sx={{ width: 'min(80vw,500px)' }} />
+              <TextField
+                label="Course name"
+                sx={{ width: 'min(80vw,500px)' }}
+                value={data.course}
+                onChange={(e) => {
+                  let text = e.target.value;
+                  text = text.replace(/\s\s+/g, ' ');
+                  text = text.replace(/[^\w\s]/gi, '');
+                  const curr = { ...data };
+                  curr.course = text.trimStart();
+                  setData(curr);
+                }}
+              />
             </Box>
 
             <Box py={1}>
-              <TextField label="Course ID" />
+              <TextField
+                label="Course ID"
+                value={data.id}
+                onChange={(e) => {
+                  let text = e.target.value;
+                  text = text.replace(/\s/g, '');
+                  text = text.replace(/[^\w]/gi, '');
+                  text = text.substr(0, 7);
+                  const curr = { ...data };
+                  curr.id = text.toUpperCase();
+                  setData(curr);
+                }}
+              />
             </Box>
 
             <Box py={1} sx={{ display: 'flex' }}>
@@ -148,6 +187,14 @@ export default function Upload() {
                     data.type === 'tutorial' ? 'Diodes Tutorial' : 'Fluid Mechanics Material'
                   }`}
                   sx={{ width: 'min(80vw,500px)' }}
+                  value={data.desc}
+                  onChange={(e) => {
+                    let text = e.target.value;
+                    text = text.replace(/\s\s+/g, ' ');
+                    const curr = { ...data };
+                    curr.desc = text.trimStart();
+                    setData(curr);
+                  }}
                 />
               </Box>
             )}

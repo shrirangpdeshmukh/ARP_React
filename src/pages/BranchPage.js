@@ -142,7 +142,9 @@ export default function BranchPage() {
   useEffect(() => {
     const url = window.location.pathname;
     const courseStr = url.split('/')[2];
-    const index = branches.findIndex((el) => el.title.toUpperCase() === courseStr.toUpperCase());
+    const index = branches.findIndex(
+      (el) => el.show && el.title.toUpperCase() === courseStr.toUpperCase()
+    );
 
     if (index < 0) navigate('/404', { replace: true });
     else {
@@ -160,14 +162,14 @@ export default function BranchPage() {
             {branch}
             {/* Computer Science and Engineering */}
           </Typography>
-          <Button
+          {/* <Button
             variant="contained"
             component={RouterLink}
             to="/upload"
             startIcon={<Icon icon={plusFill} />}
           >
             Add
-          </Button>
+          </Button> */}
         </Stack>
         <Grid container style={{ marginTop: '-5%' }}>
           <Grid item xl={2} sm={12} md={1} />
