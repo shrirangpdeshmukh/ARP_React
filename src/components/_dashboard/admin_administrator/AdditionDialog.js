@@ -31,7 +31,7 @@ export default function AdditionDialog({ handleClose, open }) {
   };
 
   return (
-    <Dialog open={open} onClose={closeHandler} maxWidth="md">
+    <Dialog open={open} onClose={closeHandler} maxWidth="xs" fullWidth>
       <DialogTitle>Add Admin</DialogTitle>
       <DialogContent>
         <Box py={1}>

@@ -150,8 +150,6 @@ export default function CoursePage() {
   return (
     <Page title={` ${courseCode} | ARP`}>
       <Container>
-        <FlagDialog open={flagDialogOpen} handleClose={closeDialog} file={flagFile} />
-
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
             {courseName}
@@ -199,6 +197,9 @@ export default function CoursePage() {
             </Typography>
           </Box>
         )}
+        {flagDialogOpen ? (
+          <FlagDialog open={flagDialogOpen} handleClose={closeDialog} file={flagFile} />
+        ) : null}
       </Container>
     </Page>
   );

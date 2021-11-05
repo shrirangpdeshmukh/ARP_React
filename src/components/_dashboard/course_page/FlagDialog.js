@@ -38,7 +38,7 @@ export default function FlagDialog({ file, handleClose, open }) {
 
   if (open && file) {
     return (
-      <Dialog open={open} onClose={closeHandler} maxWidth="xl">
+      <Dialog open={open} onClose={closeHandler} fullWidth maxWidth="xs">
         <DialogTitle>Flag File</DialogTitle>
         <DialogContent>
           <Typography variant="subtitle2">{`${sentenceCase(file.type)}: ${file.sem}`}</Typography>
@@ -47,9 +47,7 @@ export default function FlagDialog({ file, handleClose, open }) {
             <FormControl fullWidth required>
               <InputLabel id="">Flag Reason</InputLabel>
               <Select
-                autoWidth
-                displayEmpty
-                variant="filled"
+                variant="standard"
                 labelId="flag-reason"
                 id="flagReason"
                 value={reason}
