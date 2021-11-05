@@ -1,5 +1,6 @@
+import { useState, useEffect } from 'react';
+// iconify
 import { Icon } from '@iconify/react';
-import { useState } from 'react';
 import searchFill from '@iconify/icons-eva/search-fill';
 // material
 import { styled, alpha } from '@mui/material/styles';
@@ -68,6 +69,9 @@ const SearchResultsStyle = styled('div')(({ theme }) => ({
 export default function Searchbar() {
   const [isOpen, setOpen] = useState(false);
 
+  const [searchStr, setSearchStr] = useState('');
+  const [results, setResults] = useState([]);
+
   const handleOpen = () => {
     setOpen((prev) => !prev);
   };
@@ -75,6 +79,17 @@ export default function Searchbar() {
   const handleClose = () => {
     setOpen(false);
   };
+
+  const search = () => {
+    if (searchStr === '') setResults([]);
+    else {
+      // search
+    }
+  };
+
+  useEffect(() => {
+    search();
+  }, [searchStr]);
 
   return (
     <ClickAwayListener onClickAway={handleClose}>
@@ -106,7 +121,13 @@ export default function Searchbar() {
                     />
                   </InputAdornment>
                 }
-                sx={{ mr: 1, fontWeight: 'fontWeightBold' }}
+                sx={{ mr: 1, fontWeight: 700, fontSize: 18 }}
+                value={searchStr}
+                onChange={(e) => {
+                  let text = e.target.value;
+                  text = text.replace(/\s\s+/g, ' ');
+                  setSearchStr(text.trimStart());
+                }}
               />
               <Button
                 variant="contained"

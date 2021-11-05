@@ -58,7 +58,7 @@ export default function CoursePage() {
     midsem: { array: [], title: 'Mid Semester' },
     quiz: { array: [], title: 'Quiz' },
     tutorial: { array: [], title: 'Tutorials' },
-    other: { array: [], title: 'Others' }
+    others: { array: [], title: 'Others' }
   });
 
   const [flagDialogOpen, setFlagDialogOpen] = useState(false);
@@ -78,6 +78,7 @@ export default function CoursePage() {
 
   const seperatePapers = () => {
     const newCards = { ...cards };
+    console.log(resources);
     resources.forEach((paper) => newCards[paper.type].array.push(paper));
     setCards(newCards);
 

@@ -1,6 +1,8 @@
+import { useState, useEffect } from 'react';
 import { sentenceCase } from 'change-case';
-import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+//
+import axios from 'axios';
 // material
 import {
   Card,
@@ -32,12 +34,12 @@ import USERLIST from '../_mocks_/user';
 const TABLE_HEAD = [
   { id: 'branch', label: 'Branch', width: '5%' },
   { id: 'courseId', label: 'Course ID', width: '10%' },
-  { id: 'courseName', label: 'Course Name', width: '25%' },
-  { id: 'semester', label: 'Semester', width: '20%' },
+  { id: 'courseName', label: 'Course Name', width: '26%' },
+  { id: 'semester', label: 'Semester', width: '26%' },
   { id: 'type', label: 'Type', width: '5%' },
-  { id: 'file', label: 'File', width: '7%' },
+  // { id: 'file', label: 'File', width: '7%' },
   { id: 'user', label: 'Uploader', width: '10%' },
-  { id: 'date', label: 'Date Uploaded', width: '15%' },
+  // { id: 'date', label: 'Date Uploaded', width: '15%' },
   { id: '', width: '3%' }
 ];
 // ----------------------------------------------------------------------
@@ -72,7 +74,7 @@ function applySortFilter(array, comparator) {
 const colorMap = new Map([
   ['endsem', 'info'],
   ['midsem', 'warning'],
-  ['other', 'error'],
+  ['others', 'error'],
   ['tutorial', 'secondary'],
   ['quiz', 'success']
 ]);
@@ -102,6 +104,17 @@ export default function AdminUnreviewed() {
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
 
   const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy));
+
+  useEffect(() => {
+    // axios
+    //   .get(`https://arpbackend-df561.firebaseapp.com/admin/unreviewed`)
+    //   .then((res) => {
+    //     console.log(res.data);
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
+  }, []);
 
   return (
     <Page title="Admin | Unreviewed | ARP">
@@ -163,8 +176,6 @@ export default function AdminUnreviewed() {
                         email
                       } = row;
 
-                      console.log(typeof email);
-
                       return (
                         <TableRow hover key={id} tabIndex={-1}>
                           <TableCell component="th" scope="row" align="center">
@@ -187,13 +198,13 @@ export default function AdminUnreviewed() {
                               {sentenceCase(type)}
                             </Label>
                           </TableCell>
-                          <TableCell align="left">
+                          {/* <TableCell align="left">
                             <Button variant="outlined" component={RouterLink} to="#" size="small">
                               File
                             </Button>
-                          </TableCell>
+                          </TableCell> */}
                           <TableCell align="left">{email}</TableCell>
-                          <TableCell align="center">{date}</TableCell>
+                          {/* <TableCell align="center">{date}</TableCell> */}
 
                           <TableCell align="right">
                             <OptionsMenu />

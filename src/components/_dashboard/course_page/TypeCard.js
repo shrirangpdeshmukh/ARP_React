@@ -47,9 +47,9 @@ export default function TypeCard({ details, flagFileSet, handleOpen }) {
                         key={`${details.title}-${index + 1}`}
                         tabIndex={-1}
                         style={{ cursor: 'pointer' }}
-                        // onClick={() => {
-                        //   window.open(downloadLink);
-                        // }}
+                        onClick={() => {
+                          window.open(downloadLink);
+                        }}
                       >
                         <TableCell
                           component="th"

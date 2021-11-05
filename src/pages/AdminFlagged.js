@@ -4,6 +4,7 @@ import { Link as RouterLink } from 'react-router-dom';
 // material
 import {
   Card,
+  Box,
   Table,
   Stack,
   Button,
@@ -110,7 +111,7 @@ export default function AdminFlagged() {
                             </Stack>
                           </TableCell>
                           <TableCell align="left">
-                            <Stack direction="row" spacing={1}>
+                            <Box direction="row" spacing={1}>
                               {Object.entries(flagReasons).map((reason) => {
                                 console.log(colorMap.get(reason[0]));
                                 if (reason[1] > 0)
@@ -121,7 +122,7 @@ export default function AdminFlagged() {
                                   );
                                 return null;
                               })}
-                            </Stack>
+                            </Box>
                           </TableCell>
                           <TableCell align="left">
                             <Button variant="outlined" component={RouterLink} to="#" size="small">
