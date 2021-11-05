@@ -1,10 +1,12 @@
 import PropTypes from 'prop-types';
+// react
+import { useState, useEffect } from 'react';
+//
 import { filter } from 'lodash';
-import { Icon } from '@iconify/react';
-import { useState } from 'react';
-import plusFill from '@iconify/icons-eva/plus-fill';
-import { Link as RouterLink } from 'react-router-dom';
-import searchFill from '@iconify/icons-eva/search-fill';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+// axios
+import axios from 'axios';
+
 // material
 import { styled } from '@mui/material/styles';
 import {
@@ -25,12 +27,16 @@ import {
   OutlinedInput,
   InputAdornment
 } from '@mui/material';
+// iconify
+import { Icon } from '@iconify/react';
+import plusFill from '@iconify/icons-eva/plus-fill';
+import searchFill from '@iconify/icons-eva/search-fill';
 // components
 import Page from '../components/Page';
 import Scrollbar from '../components/Scrollbar';
 import SearchNotFound from '../components/SearchNotFound';
-//
-import USERLIST_ from '../_mocks_/user';
+
+import { branches } from '../assets/data/branchData';
 
 // ----------------------------------------------------------------------
 
@@ -63,22 +69,20 @@ const TABLE_HEAD = [
 
 // ----------------------------------------------------------------------
 
-BranchPage.propTypes = {
-  branch: PropTypes.string.isRequired,
-  branchCode: PropTypes.string.isRequired,
-  courses: PropTypes.array
-};
+export default function BranchPage() {
+  const navigate = useNavigate();
 
-export default function BranchPage({
-  branchCode = 'CSE',
-  branch = 'Computer Science and Engineering',
-  courses = USERLIST_
-}) {
+  const [fetched, setFetched] = useState(false);
+
   const [page, setPage] = useState(0);
   const [query, setQuery] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const USERLIST = courses;
+  const [branchCode, setBranchCode] = useState('');
+  const [branch, setBranch] = useState('');
+  const [courses, setCourses] = useState([]);
+
+  const USERLIST = [...courses];
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -98,8 +102,8 @@ export default function BranchPage({
       return filter(
         USERLIST,
         (course) =>
-          course.courseName.toLowerCase().indexOf(query.toLowerCase()) !== -1 ||
-          course.courseId.toLowerCase().indexOf(query.toLowerCase()) !== -1
+          course.subjectName.toLowerCase().indexOf(query.toLowerCase()) !== -1 ||
+          course.subjectCode.toLowerCase().indexOf(query.toLowerCase()) !== -1
       );
     }
     return USERLIST;
@@ -110,6 +114,32 @@ export default function BranchPage({
   const filteredUsers = applySearch(query);
 
   const isUserNotFound = filteredUsers.length === 0;
+
+  useEffect(() => {
+    if (courses && courses.length > 0) setFetched(true);
+  }, [courses]);
+
+  const getCourses = (course) => {
+    axios
+      .get(`https://arpbackend-df561.firebaseapp.com/studyResources/branches/${course}`)
+      .then((res) => {
+        if (res.data.length > 0) setCourses(res.data);
+        else setFetched(true);
+      })
+      .catch((err) => {
+        console.log(err);
+        setFetched(true);
+      });
+  };
+
+  useEffect(() => {
+    const url = window.location.pathname;
+    const courseStr = url.split('/')[2];
+    const index = branches.findIndex((el) => el.icon === courseStr);
+
+    if (index < 0) navigate('/404', { replace: true });
+    else getCourses(branches[index].code);
+  }, []);
 
   return (
     <Page title={`${branchCode} | ARP`}>
@@ -129,7 +159,7 @@ export default function BranchPage({
           </Button>
         </Stack>
 
-        <Card>
+        <Card sx={{ my: 5 }}>
           <RootStyle>
             <SearchStyle
               value={query}
@@ -165,25 +195,36 @@ export default function BranchPage({
                   {filteredUsers
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      const { id, courseName, courseId } = row;
+                      const { subjectName, subjectCode } = row;
                       return (
-                        <TableRow hover key={id} tabIndex={-1} role="checkbox">
+                        <TableRow
+                          hover
+                          key={subjectCode}
+                          tabIndex={-1}
+                          role="checkbox"
+                          sx={{ cursor: 'pointer' }}
+                          onClick={() => {
+                            navigate(`/course/${subjectCode}`);
+                          }}
+                        >
                           <TableCell
                             component="th"
                             scope="row"
+                            padding="normal"
                             style={{ paddingLeft: '10%', paddingRight: '10%' }}
-                            sx={{ padding: 'normal' }}
                           >
-                            <Typography variant="subtitle2" noWrap>
-                              {courseId}
-                            </Typography>
+                            <Stack direction="row" alignItems="center" spacing={2}>
+                              <Typography variant="subtitle2" noWrap>
+                                {subjectCode}
+                              </Typography>
+                            </Stack>
                           </TableCell>
                           <TableCell
                             align="left"
                             style={{ paddingLeft: '10%', paddingRight: '10%' }}
                             sx={{ padding: 'normal' }}
                           >
-                            {courseName}
+                            {subjectName}
                           </TableCell>
                         </TableRow>
                       );
@@ -198,7 +239,7 @@ export default function BranchPage({
                   <TableBody>
                     <TableRow>
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <SearchNotFound searchQuery={query} />
+                        <SearchNotFound searchQuery={query} loading={!fetched} />
                       </TableCell>
                     </TableRow>
                   </TableBody>

@@ -56,22 +56,16 @@ export default function DashboardNavbar({ onOpenSidebar, updateUser }) {
   }, [user]);
 
   const successResponseGoogle = (res) => {
-    console.log(res);
-
     setUser(res.profileObj);
     setIsLoading(false);
   };
 
   const failureResponseGoogle = (res) => {
-    console.log(res);
-
     setUser(null);
     setIsLoading(false);
   };
 
   const onAutoLoadFinished = (res) => {
-    console.log(res);
-
     setIsLoading(false);
   };
 

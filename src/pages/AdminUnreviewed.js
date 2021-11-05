@@ -111,7 +111,7 @@ export default function AdminUnreviewed() {
           </Typography>
         </Stack>
 
-        <Card>
+        <Card sx={{ my: 5 }}>
           <Scrollbar>
             <TableContainer sx={{ minWidth: 600 }}>
               <Table>

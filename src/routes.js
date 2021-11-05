@@ -33,8 +33,8 @@ export default function Router({ user, updateUser }) {
         { element: <Navigate to="/app" replace /> },
         { path: 'app', element: <DashboardApp /> },
         { path: 'user', element: <User /> },
-        { path: 'branch', element: <BranchPage /> },
-        { path: 'course', element: <CoursePage /> },
+        { path: 'branch/:name', element: <BranchPage /> },
+        { path: 'course/:code', element: <CoursePage /> },
         { path: 'upload', element: <Upload /> },
         { path: 'products', element: <Products /> },
         { path: 'blog', element: <Blog /> }
@@ -47,8 +47,7 @@ export default function Router({ user, updateUser }) {
         { path: 'login', element: <Login /> },
         { path: 'register', element: <Register /> },
         { path: '404', element: <NotFound /> },
-        { path: '/', element: <Navigate to="/" /> },
-        { path: '*', element: <Navigate to="/404" /> }
+        { path: '/', element: <Navigate to="/" /> }
       ]
     },
     {

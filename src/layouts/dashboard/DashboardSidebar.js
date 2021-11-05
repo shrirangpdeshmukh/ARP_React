@@ -13,6 +13,8 @@ import { MHidden } from '../../components/@material-extend';
 import sidebarConfig from './SidebarConfig';
 import account from '../../_mocks_/account';
 
+import neuro from '../../assets/images/neuro.png';
+
 // ----------------------------------------------------------------------
 
 const DRAWER_WIDTH = 280;
@@ -97,28 +99,19 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar, user }
             bgcolor: 'grey.200'
           }}
         >
-          <Box
-            component="img"
-            src="/static/illustrations/illustration_avatar.png"
-            sx={{ width: 100, position: 'absolute', top: -50 }}
-          />
+          <Box component="img" src={neuro} sx={{ width: 100, position: 'absolute', top: -50 }} />
 
           <Box sx={{ textAlign: 'center' }}>
             <Typography gutterBottom variant="h6">
-              Get more?
+              Queries?
             </Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              From only $69
+              Contact us
             </Typography>
           </Box>
 
-          <Button
-            fullWidth
-            href="https://material-ui.com/store/items/minimal-dashboard/"
-            target="_blank"
-            variant="contained"
-          >
-            Upgrade to Pro
+          <Button fullWidth href="mailto:secyprogsoc.sg@iitbbs.ac.in" variant="contained">
+            Neuromancers
           </Button>
         </Stack>
       </Box>

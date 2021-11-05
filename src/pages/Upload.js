@@ -30,11 +30,25 @@ for (let i = new Date().getFullYear(); i > 2015; i -= 1) {
 export default function Upload() {
   const [file, setFile] = useState(null);
 
+  const [data, setData] = useState({
+    course: '',
+    id: '',
+    type: 'endsem',
+    sem: 'autumn',
+    year: '2021',
+    desc: ''
+  });
+
   const handleFile = (inFile) => {
     if (!inFile) return;
 
-    console.log(inFile);
     setFile(inFile);
+  };
+
+  const handleChange = (el, e) => {
+    const curr = { ...data };
+    curr[el] = e.target.value;
+    setData(curr);
   };
 
   return (
@@ -112,8 +126,11 @@ export default function Upload() {
               <TextField
                 select
                 size="small"
-                value={TYPE_OPTIONS[0].value}
+                value={data.type}
                 sx={{ paddingRight: '20px' }}
+                onChange={(event) => {
+                  handleChange('type', event);
+                }}
               >
                 {TYPE_OPTIONS.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
@@ -123,6 +140,18 @@ export default function Upload() {
               </TextField>
             </Box>
 
+            {['tutorial', 'others'].includes(data.type) && (
+              <Box py={1}>
+                <TextField
+                  label="Description"
+                  placeholder={`Ex: ${
+                    data.type === 'tutorial' ? 'Diodes Tutorial' : 'Fluid Mechanics Material'
+                  }`}
+                  sx={{ width: 'min(80vw,500px)' }}
+                />
+              </Box>
+            )}
+
             <Box py={1} sx={{ display: 'flex' }}>
               <Typography sx={{ display: 'flex', alignItems: 'center', width: '160px' }}>
                 Resource Semester
@@ -130,8 +159,11 @@ export default function Upload() {
               <TextField
                 select
                 size="small"
-                value={SEM_OPTIONS[0].value}
+                value={data.sem}
                 sx={{ paddingRight: '20px' }}
+                onChange={(event) => {
+                  handleChange('sem', event);
+                }}
               >
                 {SEM_OPTIONS.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
@@ -148,8 +180,11 @@ export default function Upload() {
               <TextField
                 select
                 size="small"
-                value={YEAR_OPTIONS[0].value}
+                value={data.year}
                 sx={{ paddingRight: '20px' }}
+                onChange={(event) => {
+                  handleChange('year', event);
+                }}
               >
                 {YEAR_OPTIONS.map((option) => (
                   <MenuItem key={option.value} value={option.value}>

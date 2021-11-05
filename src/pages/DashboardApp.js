@@ -15,7 +15,7 @@ import {
 } from '../components/_dashboard/app';
 
 // data
-import { branches } from '../data';
+import { branches } from '../assets/data/branchData';
 
 // ----------------------------------------------------------------------
 
@@ -34,6 +34,7 @@ export default function DashboardApp() {
                 icon={branch.icon}
                 title={branch.title}
                 subtitle={branch.subtitle}
+                code={branch.code}
               />
             </Grid>
           ))}
