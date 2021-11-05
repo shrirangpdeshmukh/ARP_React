@@ -9,6 +9,7 @@ import alertTriangleFill from '@iconify/icons-eva/alert-triangle-fill';
 import cloudUploadFill from '@iconify/icons-eva/cloud-upload-fill';
 import baselineRateReview from '@iconify/icons-ic/baseline-rate-review';
 import bxsFlag from '@iconify/icons-bx/bxs-flag';
+import plusCircleFilled from '@iconify/icons-ant-design/plus-circle-filled';
 
 // ----------------------------------------------------------------------
 
@@ -29,6 +30,11 @@ const sidebarConfig = [
     title: 'manage admin',
     path: '/admin/manage',
     icon: getIcon(peopleFill)
+  },
+  {
+    title: 'Add Course',
+    path: '/admin/addCourse',
+    icon: getIcon(plusCircleFilled)
   },
   // {
   //   title: 'product',
