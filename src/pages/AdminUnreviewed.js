@@ -30,14 +30,15 @@ import USERLIST from '../_mocks_/user';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'branch', label: 'Branch', width: '7%' },
+  { id: 'branch', label: 'Branch', width: '5%' },
   { id: 'courseId', label: 'Course ID', width: '10%' },
   { id: 'courseName', label: 'Course Name', width: '25%' },
-  { id: 'semester', label: 'Semester', width: '25%' },
-  { id: 'type', label: 'Type', width: '8%' },
-  { id: 'file', label: 'File', width: '10%' },
+  { id: 'semester', label: 'Semester', width: '20%' },
+  { id: 'type', label: 'Type', width: '5%' },
+  { id: 'file', label: 'File', width: '7%' },
+  { id: 'user', label: 'Uploader', width: '10%' },
   { id: 'date', label: 'Date Uploaded', width: '15%' },
-  { id: '', width: '5%' }
+  { id: '', width: '3%' }
 ];
 // ----------------------------------------------------------------------
 
@@ -150,8 +151,19 @@ export default function AdminUnreviewed() {
                   {filteredUsers
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      const { id, date, type, description, sem, courseId, courseName, branch } =
-                        row;
+                      const {
+                        id,
+                        date,
+                        type,
+                        description,
+                        sem,
+                        courseId,
+                        courseName,
+                        branch,
+                        email
+                      } = row;
+
+                      console.log(typeof email);
 
                       return (
                         <TableRow hover key={id} tabIndex={-1}>
@@ -180,7 +192,7 @@ export default function AdminUnreviewed() {
                               File
                             </Button>
                           </TableCell>
-
+                          <TableCell align="left">{email}</TableCell>
                           <TableCell align="center">{date}</TableCell>
 
                           <TableCell align="right">
