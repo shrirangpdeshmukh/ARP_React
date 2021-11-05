@@ -1,8 +1,5 @@
-import { filter } from 'lodash';
-import { Icon } from '@iconify/react';
 import { sentenceCase } from 'change-case';
 import { useState } from 'react';
-import plusFill from '@iconify/icons-eva/plus-fill';
 import { Link as RouterLink } from 'react-router-dom';
 // material
 import {
@@ -16,27 +13,31 @@ import {
   Container,
   Typography,
   TableContainer,
-  TablePagination
+  TablePagination,
+  Box,
+  TableHead,
+  TableSortLabel
 } from '@mui/material';
+import { visuallyHidden } from '@mui/utils';
 // components
 import Page from '../components/Page';
 import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
-import { UserListHead, UserMoreMenu } from '../components/_dashboard/user';
+import { OptionsMenu } from '../components/_dashboard/admin_unreviewed';
 //
 import USERLIST from '../_mocks_/user';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'branch', label: 'Branch', alignRight: false },
-  { id: 'courseId', label: 'Course ID', alignRight: false },
-  { id: 'courseName', label: 'Course Name', alignRight: false },
-  { id: 'semester', label: 'Semester', alignRight: false },
-  { id: 'type', label: 'Type', alignRight: false },
-  { id: 'file', label: 'File', alignRight: false },
-  { id: 'date', label: 'Date Uploaded', alignRight: false },
-  { id: '' }
+  { id: 'branch', label: 'Branch', width: '7%' },
+  { id: 'courseId', label: 'Course ID', width: '10%' },
+  { id: 'courseName', label: 'Course Name', width: '25%' },
+  { id: 'semester', label: 'Semester', width: '25%' },
+  { id: 'type', label: 'Type', width: '8%' },
+  { id: 'file', label: 'File', width: '10%' },
+  { id: 'date', label: 'Date Uploaded', width: '15%' },
+  { id: '', width: '5%' }
 ];
 // ----------------------------------------------------------------------
 
@@ -75,7 +76,7 @@ const colorMap = new Map([
   ['quiz', 'success']
 ]);
 
-export default function User() {
+export default function AdminUnreviewed() {
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
 
@@ -102,7 +103,7 @@ export default function User() {
   const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy));
 
   return (
-    <Page title="User | Minimal-UI">
+    <Page title="Admin | Unreviewed | ARP">
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
@@ -114,15 +115,37 @@ export default function User() {
           <Scrollbar>
             <TableContainer sx={{ minWidth: 600 }}>
               <Table>
-                <UserListHead
-                  order={order}
-                  orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={USERLIST.length}
-                  // numSelected={selected.length}
-                  onRequestSort={handleRequestSort}
-                  // onSelectAllClick={handleSelectAllClick}
-                />
+                <TableHead>
+                  <TableRow>
+                    {TABLE_HEAD.map((headCell) => (
+                      <TableCell
+                        key={headCell.id}
+                        align="left"
+                        sortDirection={orderBy === headCell.id ? order : false}
+                        width={headCell.width}
+                      >
+                        {headCell.id === orderBy ? (
+                          <TableSortLabel
+                            active
+                            direction={order}
+                            onClick={(event) => {
+                              handleRequestSort(event, headCell.id);
+                            }}
+                          >
+                            {headCell.label}
+
+                            <Box sx={{ ...visuallyHidden }}>
+                              {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                            </Box>
+                          </TableSortLabel>
+                        ) : (
+                          headCell.label
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+
                 <TableBody>
                   {filteredUsers
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -132,7 +155,7 @@ export default function User() {
 
                       return (
                         <TableRow hover key={id} tabIndex={-1}>
-                          <TableCell component="th" scope="row">
+                          <TableCell component="th" scope="row" align="center">
                             <Typography variant="subtitle2">{branch}</Typography>
                           </TableCell>
                           <TableCell align="left">{courseId}</TableCell>
@@ -158,10 +181,10 @@ export default function User() {
                             </Button>
                           </TableCell>
 
-                          <TableCell align="left">{date}</TableCell>
+                          <TableCell align="center">{date}</TableCell>
 
                           <TableCell align="right">
-                            <UserMoreMenu />
+                            <OptionsMenu />
                           </TableCell>
                         </TableRow>
                       );
