@@ -14,6 +14,7 @@ import User from './pages/User';
 import CoursePage from './pages/CoursePage';
 import BranchPage from './pages/BranchPage';
 import AdminUnreviewed from './pages/AdminUnreviewed';
+import AdminFlagged from './pages/AdminFlagged';
 import Upload from './pages/Upload';
 import NotFound from './pages/Page404';
 
@@ -53,7 +54,10 @@ export default function Router({ user, updateUser }) {
     {
       path: '/admin',
       element: <DashboardLayout user={user} updateUser={updateUser} />,
-      children: [{ path: 'unreviewed', element: <AdminUnreviewed /> }]
+      children: [
+        { path: 'unreviewed', element: <AdminUnreviewed /> },
+        { path: 'flagged', element: <AdminFlagged /> }
+      ]
     },
     { path: '*', element: <Navigate to="/404" replace /> }
   ]);

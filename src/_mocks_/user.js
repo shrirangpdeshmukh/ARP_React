@@ -35,7 +35,13 @@ const users = [...Array(12)].map((_, index) => ({
     'Full Stack Designer',
     'Front End Developer',
     'Full Stack Developer'
-  ])
+  ]),
+  flagReasons: {
+    unclear: faker.datatype.number({ min: 0, max: 3 }),
+    irrelevant: faker.datatype.number({ min: -3, max: 3 }),
+    explicit: faker.datatype.number({ min: 2, max: 3 }),
+    duplicate: faker.datatype.number({ min: -3, max: 3 })
+  }
 }));
 
 export default users;

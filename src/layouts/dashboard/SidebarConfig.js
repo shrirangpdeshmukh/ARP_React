@@ -8,7 +8,7 @@ import personAddFill from '@iconify/icons-eva/person-add-fill';
 import alertTriangleFill from '@iconify/icons-eva/alert-triangle-fill';
 import cloudUploadFill from '@iconify/icons-eva/cloud-upload-fill';
 import baselineRateReview from '@iconify/icons-ic/baseline-rate-review';
-// import bxsFlag from '@iconify/icons-bx/bxs-flag';
+import bxsFlag from '@iconify/icons-bx/bxs-flag';
 
 // ----------------------------------------------------------------------
 
@@ -59,12 +59,12 @@ const sidebarConfig = [
     title: 'Review Resources',
     path: '/admin/unreviewed',
     icon: getIcon(baselineRateReview)
+  },
+  {
+    title: 'Review Flags',
+    path: '/admin/flagged',
+    icon: getIcon(bxsFlag)
   }
-  // {
-  //   title: 'Review Flags',
-  //   path: '/admin/flagged',
-  //   icon: getIcon(bxsFlag)
-  // }
 ];
 
 export default sidebarConfig;
