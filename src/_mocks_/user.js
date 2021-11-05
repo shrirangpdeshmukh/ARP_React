@@ -7,6 +7,7 @@ import { mockImgAvatar } from '../utils/mockImages';
 
 const users = [...Array(12)].map((_, index) => ({
   id: faker.datatype.uuid(),
+  email: sample(['20ee01015@iitbbs.ac.in', 'abc123@iitbbs.ac.in']),
   avatarUrl: mockImgAvatar(index + 1),
   name: faker.name.findName(),
   company: faker.company.companyName(),
