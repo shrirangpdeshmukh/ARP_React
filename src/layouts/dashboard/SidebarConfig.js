@@ -27,7 +27,7 @@ const sidebarConfig = [
   },
   {
     title: 'manage admin',
-    path: '/user',
+    path: '/admin/manage',
     icon: getIcon(peopleFill)
   },
   // {

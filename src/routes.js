@@ -15,6 +15,7 @@ import CoursePage from './pages/CoursePage';
 import BranchPage from './pages/BranchPage';
 import AdminUnreviewed from './pages/AdminUnreviewed';
 import AdminFlagged from './pages/AdminFlagged';
+import ManageAdmin from './pages/ManageAdmin';
 import Upload from './pages/Upload';
 import NotFound from './pages/Page404';
 
@@ -33,7 +34,7 @@ export default function Router({ user, updateUser }) {
       children: [
         { element: <Navigate to="/app" replace /> },
         { path: 'app', element: <DashboardApp /> },
-        { path: 'user', element: <User /> },
+        { path: 'admin/manage', element: <ManageAdmin /> },
         { path: 'branch/:name', element: <BranchPage /> },
         { path: 'course/:code', element: <CoursePage /> },
         { path: 'upload', element: <Upload /> },

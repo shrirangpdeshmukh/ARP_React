@@ -33,6 +33,7 @@ import flag from '@iconify/icons-bi/flag';
 // components
 import Page from '../components/Page';
 import Scrollbar from '../components/Scrollbar';
+import { TypeCard, FlagDialog } from '../components/_dashboard/course_page';
 //
 import USERLIST from '../_mocks_/user';
 
@@ -40,97 +41,6 @@ import { branches } from '../assets/data/branchData';
 import courseData from '../assets/data/courseData.json';
 
 // ----------------------------------------------------------------------
-
-const TABLE_HEAD = [
-  { id: 'name', label: 'Name', width: 'calc(100% - 200px)' },
-  { id: 'company', label: 'Uploaded On', width: '120px' },
-  { id: '', width: '80px' }
-];
-
-const ColorButton = styled(IconButton)(({ theme, color = 'primary' }) => ({
-  backgroundColor: theme.palette[color].lighter,
-  '&:hover': {
-    backgroundColor: theme.palette[color].light
-  }
-}));
-
-const TypeCard = ({ details }) => {
-  if (details.array.length > 0) {
-    return (
-      <Grid item xs={12} sm={6} md={6} padding={1} mb={5}>
-        <Card>
-          <CardHeader title={details.title} />
-          <Box style={{ maxHeight: '200px', overflow: 'auto' }}>
-            <Scrollbar style={{ maxHeight: '200px' }}>
-              <Table stickyHeader style={{ width: '100%', tableLayout: 'fixed' }}>
-                {/* <TableHead>
-                  <TableRow>
-                    {TABLE_HEAD.map((headCell) => (
-                      <TableCell key={headCell.id} align="left" style={{ width: headCell.width }}>
-                        {headCell.label}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead> */}
-                <TableBody>
-                  {details.array.map((row, index) => {
-                    const { semester, year, description, downloadLink } = row;
-
-                    return (
-                      <TableRow
-                        hover
-                        key={`${details.title}-${index + 1}`}
-                        tabIndex={-1}
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => {
-                          window.open(downloadLink);
-                        }}
-                      >
-                        <TableCell
-                          component="th"
-                          scope="row"
-                          style={{
-                            textOverflow: 'ellipsis',
-                            overflow: 'hidden',
-                            width: 'calc(100% - 200px)'
-                          }}
-                        >
-                          <Typography variant="subtitle2" noWrap>
-                            {`${semester}-${year}`}
-                          </Typography>
-                          <Typography variant="subtitle3" noWrap>
-                            {description}
-                          </Typography>
-                        </TableCell>
-                        <TableCell align="left" style={{ width: '120px' }}>
-                          {year}
-                        </TableCell>
-
-                        <TableCell align="left" style={{ width: '80px' }}>
-                          <Tooltip title="Report resource" placement="right">
-                            <ColorButton
-                              onClick={(event) => {
-                                event.stopPropagation();
-                                event.preventDefault();
-                              }}
-                            >
-                              <Icon icon={flag} width={18} height={18} />
-                            </ColorButton>
-                          </Tooltip>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </Scrollbar>
-          </Box>
-        </Card>
-      </Grid>
-    );
-  }
-  return null;
-};
 
 // ----------------------------------------------------------------------
 
@@ -150,6 +60,21 @@ export default function CoursePage() {
     tutorial: { array: [], title: 'Tutorials' },
     other: { array: [], title: 'Others' }
   });
+
+  const [flagDialogOpen, setFlagDialogOpen] = useState(false);
+  const [flagFile, setFlagFile] = useState(null);
+
+  const openDialog = () => {
+    setFlagDialogOpen(true);
+  };
+  const closeDialog = () => {
+    setFlagDialogOpen(false);
+    setFlagFile(null);
+  };
+
+  const flagFileSet = (newFlagFile) => {
+    setFlagFile(newFlagFile);
+  };
 
   const seperatePapers = () => {
     const newCards = { ...cards };
@@ -226,6 +151,8 @@ export default function CoursePage() {
   return (
     <Page title={` ${courseCode} | ARP`}>
       <Container>
+        <FlagDialog open={flagDialogOpen} handleClose={closeDialog} file={flagFile} />
+
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
             {courseName}
@@ -246,7 +173,14 @@ export default function CoursePage() {
             {Object.entries(cards).map((type) => {
               const details = type[1];
               const key = type[0];
-              return <TypeCard details={details} key={key} />;
+              return (
+                <TypeCard
+                  details={details}
+                  key={key}
+                  handleOpen={openDialog}
+                  flagFileSet={flagFileSet}
+                />
+              );
             })}
           </Grid>
         ) : (
@@ -269,7 +203,3 @@ export default function CoursePage() {
     </Page>
   );
 }
-
-TypeCard.propTypes = {
-  details: PropTypes.object.isRequired
-};

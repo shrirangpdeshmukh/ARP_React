@@ -25,7 +25,8 @@ import {
   TablePagination,
   Toolbar,
   OutlinedInput,
-  InputAdornment
+  InputAdornment,
+  Grid
 } from '@mui/material';
 // iconify
 import { Icon } from '@iconify/react';
@@ -168,106 +169,111 @@ export default function BranchPage() {
             Add
           </Button>
         </Stack>
+        <Grid container style={{ marginTop: '-5%' }}>
+          <Grid item xl={2} sm={12} md={1} />
+          <Grid item xl={8} sm={12} md={10}>
+            <Card sx={{ my: 5 }}>
+              <RootStyle>
+                <SearchStyle
+                  value={query}
+                  onChange={handleFilterByName}
+                  placeholder="Search course ..."
+                  startAdornment={
+                    <InputAdornment position="start">
+                      <Box component={Icon} icon={searchFill} sx={{ color: 'text.disabled' }} />
+                    </InputAdornment>
+                  }
+                />
+              </RootStyle>
 
-        <Card sx={{ my: 5 }}>
-          <RootStyle>
-            <SearchStyle
-              value={query}
-              onChange={handleFilterByName}
-              placeholder="Search course ..."
-              startAdornment={
-                <InputAdornment position="start">
-                  <Box component={Icon} icon={searchFill} sx={{ color: 'text.disabled' }} />
-                </InputAdornment>
-              }
-            />
-          </RootStyle>
-
-          <Scrollbar>
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    {TABLE_HEAD.map((headCell) => (
-                      <TableCell
-                        key={headCell.id}
-                        align="left"
-                        width={headCell.width}
-                        style={{ paddingLeft: '10%', paddingRight: '10%' }}
-                        sx={{ padding: 'normal' }}
-                      >
-                        {headCell.label}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {filteredUsers
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row) => {
-                      const { subjectName, subjectCode } = row;
-                      return (
-                        <TableRow
-                          hover
-                          key={subjectCode}
-                          tabIndex={-1}
-                          role="checkbox"
-                          sx={{ cursor: 'pointer' }}
-                          onClick={() => {
-                            navigate(`/course/${subjectCode}`);
-                          }}
-                        >
+              <Scrollbar>
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        {TABLE_HEAD.map((headCell) => (
                           <TableCell
-                            component="th"
-                            scope="row"
-                            padding="normal"
-                            style={{ paddingLeft: '10%', paddingRight: '10%' }}
-                          >
-                            <Stack direction="row" alignItems="center" spacing={2}>
-                              <Typography variant="subtitle2" noWrap>
-                                {subjectCode}
-                              </Typography>
-                            </Stack>
-                          </TableCell>
-                          <TableCell
+                            key={headCell.id}
                             align="left"
+                            width={headCell.width}
                             style={{ paddingLeft: '10%', paddingRight: '10%' }}
                             sx={{ padding: 'normal' }}
                           >
-                            {subjectName}
+                            {headCell.label}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {filteredUsers
+                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                        .map((row) => {
+                          const { subjectName, subjectCode } = row;
+                          return (
+                            <TableRow
+                              hover
+                              key={subjectCode}
+                              tabIndex={-1}
+                              role="checkbox"
+                              sx={{ cursor: 'pointer' }}
+                              onClick={() => {
+                                navigate(`/course/${subjectCode}`);
+                              }}
+                            >
+                              <TableCell
+                                component="th"
+                                scope="row"
+                                padding="normal"
+                                style={{ paddingLeft: '10%', paddingRight: '10%' }}
+                              >
+                                <Stack direction="row" alignItems="center" spacing={2}>
+                                  <Typography variant="subtitle2" noWrap>
+                                    {subjectCode}
+                                  </Typography>
+                                </Stack>
+                              </TableCell>
+                              <TableCell
+                                align="left"
+                                style={{ paddingLeft: '10%', paddingRight: '10%' }}
+                                sx={{ padding: 'normal' }}
+                              >
+                                {subjectName}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      {emptyRows > 0 && (
+                        <TableRow style={{ height: 53 * emptyRows }}>
+                          <TableCell colSpan={6} />
+                        </TableRow>
+                      )}
+                    </TableBody>
+                    {isUserNotFound && (
+                      <TableBody>
+                        <TableRow>
+                          <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                            <SearchNotFound searchQuery={query} loading={!fetched} />
                           </TableCell>
                         </TableRow>
-                      );
-                    })}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 53 * emptyRows }}>
-                      <TableCell colSpan={6} />
-                    </TableRow>
-                  )}
-                </TableBody>
-                {isUserNotFound && (
-                  <TableBody>
-                    <TableRow>
-                      <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <SearchNotFound searchQuery={query} loading={!fetched} />
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                )}
-              </Table>
-            </TableContainer>
-          </Scrollbar>
+                      </TableBody>
+                    )}
+                  </Table>
+                </TableContainer>
+              </Scrollbar>
 
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={USERLIST.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Card>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25]}
+                component="div"
+                count={USERLIST.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            </Card>{' '}
+          </Grid>
+          <Grid item xl={2} sm={12} md={1} />
+        </Grid>
       </Container>
     </Page>
   );

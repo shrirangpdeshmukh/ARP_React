@@ -67,7 +67,7 @@ export default function AdminFlagged() {
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Unreviewed Resources
+            Flagged Resources
           </Typography>
         </Stack>
 
@@ -92,7 +92,7 @@ export default function AdminFlagged() {
                       const { id, description, sem, courseId, courseName, branch, flagReasons } =
                         row;
 
-                      console.log(flagReasons);
+                      // console.log(flagReasons);
 
                       return (
                         <TableRow hover key={id} tabIndex={-1}>
