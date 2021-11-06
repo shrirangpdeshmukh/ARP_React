@@ -7,6 +7,7 @@ import { Button, Container, Typography, TextField, MenuItem, Box } from '@mui/ma
 import Page from '../components/Page';
 //
 import { branches as BRANCHES } from '../assets/data/branchData';
+import courseData from '../assets/data/courseData.json';
 // ---------------------------------------------------------
 
 export default function AddCourse() {
@@ -20,6 +21,46 @@ export default function AddCourse() {
     const curr = { ...data };
     curr[el] = e.target.value;
     setData(curr);
+  };
+
+  const courseIDValidation = (id) => {
+    if (id.length !== 7) return { valid: false, err: 'Course ID length should be equal to 7' };
+
+    const code = id.substr(0, 2);
+    const index = BRANCHES.findIndex((el) => el.code === code);
+    if (index < 0) return { valid: false, err: 'Branch Code in Course ID is invalid' };
+
+    if (
+      Number.isNaN(parseInt(id[2], 10)) ||
+      Number.isNaN(parseInt(id[4], 10)) ||
+      Number.isNaN(parseInt(id[5], 10)) ||
+      Number.isNaN(parseInt(id[6], 10))
+    )
+      return { valid: false, err: 'Course ID is invalid' };
+
+    if (!['L', 'P', 'T'].includes(id[3]))
+      return { valid: false, err: 'Fourth character in Course ID should be L, P or T' };
+
+    return { valid: true, err: '' };
+  };
+
+  const onSubmit = () => {
+    const { valid, err } = courseIDValidation(data.id);
+    if (!valid) {
+      window.alert(err);
+      return;
+    }
+
+    const index = courseData.findIndex((el) => el.course === data.branch);
+    if (index >= 0) {
+      console.log('Found Course');
+
+      const newCourse = { subjectName: data.course, subjectCode: data.id };
+
+      courseData[index].courses.push(newCourse);
+
+      // writeJsonFileSync('../assets/data/courseData.json', { courseData });
+    }
   };
 
   return (
@@ -47,7 +88,7 @@ export default function AddCourse() {
                 {BRANCHES.map((option) => {
                   if (option.show)
                     return (
-                      <MenuItem key={option.icon} value={option.icon}>
+                      <MenuItem key={option.icon} value={option.title}>
                         {option.subtitle}
                       </MenuItem>
                     );
@@ -93,6 +134,7 @@ export default function AddCourse() {
           <Button
             variant="contained"
             sx={{ margin: '20px 10px' }}
+            onClick={onSubmit}
             disabled={!data || !data.id || !data.course || !data.branch}
           >
             Add
