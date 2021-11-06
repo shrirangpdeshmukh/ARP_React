@@ -3,14 +3,8 @@ import PropTypes from 'prop-types';
 import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
 import DashboardLayout from './layouts/dashboard';
-import LogoOnlyLayout from './layouts/LogoOnlyLayout';
 //
-import Login from './pages/Login';
-import Register from './pages/Register';
 import DashboardApp from './pages/DashboardApp';
-import Products from './pages/Products';
-import Blog from './pages/Blog';
-import User from './pages/User';
 import CoursePage from './pages/CoursePage';
 import BranchPage from './pages/BranchPage';
 import AdminUnreviewed from './pages/AdminUnreviewed';
@@ -44,19 +38,7 @@ export default function Router({ user, updateUser }) {
         { path: 'admin/addCourse', element: <AdminAddCourse /> },
         { path: '*', element: <Navigate to="/404" replace /> },
         { path: '404', element: <NotFound /> }
-        // { path: 'products', element: <Products /> },
-        // { path: 'blog', element: <Blog /> }
       ]
     }
-    // {
-    //   path: '/',
-    //   element: <LogoOnlyLayout />,
-    //   children: [
-    //     { path: 'login', element: <Login /> },
-    //     { path: 'register', element: <Register /> },
-    //     { path: '/', element: <Navigate to="/" /> }
-    //   ]
-    // },
-    // { path: '*', element: <Navigate to="/404" replace /> }
   ]);
 }
