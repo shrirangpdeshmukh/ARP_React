@@ -19,7 +19,7 @@ FilePreview.propTypes = {
   file: PropTypes.object
 };
 
-function PDFPreview({ pdf }) {
+function PDFPreview({ pdfUrl }) {
   const [thumbnail, setThumbnail] = useState(null);
 
   const getThumb = async () => {
@@ -28,7 +28,7 @@ function PDFPreview({ pdf }) {
     pdfjsLib.GlobalWorkerOptions.workerSrc =
       '//cdn.jsdelivr.net/npm/pdfjs-dist@2.6.347/build/pdf.worker.js';
 
-    const doc = await pdfjsLib.getDocument(URL.createObjectURL(pdf)).promise;
+    const doc = await pdfjsLib.getDocument(pdfUrl).promise;
     const page = await doc.getPage(1);
 
     const viewport = page.getViewport({ scale: 1 });
@@ -62,16 +62,30 @@ function PDFPreview({ pdf }) {
   return <CircularProgress />;
 }
 
-function Preview({ file }) {
-  if (file.type.startsWith('image'))
+function Preview({ file, src }) {
+  let type = '';
+  if (file) type = file.type;
+  else {
+    const name = src.split('/')[src.split('/').length - 1].split('?')[0];
+    type = name.split('.')[name.split('.').length - 1];
+  }
+
+  console.log(type, file, src);
+
+  if ((file && type.startsWith('image')) || (src && ['png', 'jpg', 'jpeg', 'gif'].includes(type)))
     return (
       <img
-        src={URL.createObjectURL(file)}
+        src={file ? URL.createObjectURL(file) : src}
         alt="file preview"
         style={{ objectFit: 'cover', width: '100%', height: '100%' }}
       />
     );
-  if (file.type === 'application/pdf') return <PDFPreview pdf={file} />;
+
+  if (type === 'application/pdf') {
+    if (file) return <PDFPreview pdfUrl={URL.createObjectURL(file)} />;
+    return <PDFPreview pdfUrl={src} />;
+  }
+
   return (
     <Box>
       <Icon icon={fileTextOutline} width={40} height={40} />
@@ -80,13 +94,15 @@ function Preview({ file }) {
   );
 }
 
-export default function FilePreview({ file }) {
+export default function FilePreview({ file, src }) {
   let name = '';
-  if (file.name.length <= 24) name = file.name;
-  else {
-    const ext = file.name.split('.')[file.name.split('.').length - 1];
-    name = file.name.substr(0, 21 - ext.length + 1);
-    name += `....${ext}`;
+  if (file) {
+    if (file.name.length <= 24) name = file.name;
+    else {
+      const ext = file.name.split('.')[file.name.split('.').length - 1];
+      name = file.name.substr(0, 21 - ext.length + 1);
+      name += `....${ext}`;
+    }
   }
 
   return (
@@ -96,7 +112,12 @@ export default function FilePreview({ file }) {
         bgcolor: 'grey.200',
         position: 'relative',
         overflow: 'hidden',
-        boxShadow: '0 0 2px 0 rgb(145 158 171 / 24%), 0 16px 32px -4px rgb(145 158 171 / 24%)'
+        boxShadow: '0 0 2px 0 rgb(145 158 171 / 24%), 0 16px 32px -4px rgb(145 158 171 / 24%)',
+        cursor: 'pointer'
+      }}
+      onClick={() => {
+        if (src) window.open(src);
+        else window.open(URL.createObjectURL(file));
       }}
     >
       <Box
@@ -109,7 +130,7 @@ export default function FilePreview({ file }) {
           alignItems: 'center'
         }}
       >
-        <Preview file={file} />
+        <Preview file={file} src={src} />
       </Box>
       <Box
         sx={{
@@ -126,7 +147,7 @@ export default function FilePreview({ file }) {
           lineHeight: '40px'
         }}
       >
-        {name}
+        {name === '' ? 'Resource Preview' : name}
       </Box>
     </Box>
   );

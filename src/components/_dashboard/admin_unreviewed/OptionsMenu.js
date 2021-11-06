@@ -24,14 +24,23 @@ export default function OptionsMenu() {
 
   return (
     <>
-      <IconButton ref={ref} onClick={() => setIsOpen(true)}>
+      <IconButton
+        ref={ref}
+        onClick={(event) => {
+          event.stopPropagation();
+          setIsOpen(true);
+        }}
+      >
         <Icon icon={moreVerticalFill} width={20} height={20} />
       </IconButton>
 
       <Menu
         open={isOpen}
         anchorEl={ref.current}
-        onClose={() => setIsOpen(false)}
+        onClose={(event) => {
+          event.stopPropagation();
+          setIsOpen(false);
+        }}
         PaperProps={{
           sx: { width: 200, maxWidth: '100%' }
         }}

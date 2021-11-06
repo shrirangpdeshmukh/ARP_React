@@ -11,6 +11,7 @@ import AdminUnreviewed from './pages/AdminUnreviewed';
 import AdminFlagged from './pages/AdminFlagged';
 import AdminManage from './pages/AdminManage';
 import AdminAddCourse from './pages/AdminAddCourse';
+import ReviewPaper from './pages/ReviewPaper';
 import Upload from './pages/Upload';
 import NotFound from './pages/Page404';
 
@@ -36,6 +37,7 @@ export default function Router({ user, updateUser }) {
         { path: 'admin/unreviewed', element: <AdminUnreviewed /> },
         { path: 'admin/flagged', element: <AdminFlagged /> },
         { path: 'admin/addCourse', element: <AdminAddCourse /> },
+        { path: 'admin/review/:id', element: <ReviewPaper /> },
         { path: '*', element: <Navigate to="/404" replace /> },
         { path: '404', element: <NotFound /> }
       ]

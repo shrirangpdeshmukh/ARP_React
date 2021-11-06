@@ -30,10 +30,10 @@ import USERLIST from '../_mocks_/user';
 const TABLE_HEAD = [
   { id: 'branch', label: 'Branch', width: '5%' },
   { id: 'courseId', label: 'Course ID', width: '10%' },
-  { id: 'courseName', label: 'Course Name', width: '25%' },
-  { id: 'semester', label: 'Semester', width: '20%' },
+  { id: 'courseName', label: 'Course Name', width: '26%' },
+  { id: 'semester', label: 'Semester', width: '26%' },
   { id: 'flags', label: 'Flags', width: '30%' },
-  { id: 'file', label: 'File', width: '7%' },
+  // { id: 'file', label: 'File', width: '7%' },
   { id: '', width: '3%' }
 ];
 // ----------------------------------------------------------------------
@@ -96,7 +96,16 @@ export default function AdminFlagged() {
                       // console.log(flagReasons);
 
                       return (
-                        <TableRow hover key={id} tabIndex={-1}>
+                        <TableRow
+                          hover
+                          key={id}
+                          tabIndex={-1}
+                          sx={{ cursor: 'pointer' }}
+                          onClick={() => {
+                            // open file
+                            // window.open();
+                          }}
+                        >
                           <TableCell component="th" scope="row" align="center">
                             <Typography variant="subtitle2">{branch}</Typography>
                           </TableCell>
@@ -124,11 +133,11 @@ export default function AdminFlagged() {
                               })}
                             </Box>
                           </TableCell>
-                          <TableCell align="left">
+                          {/* <TableCell align="left">
                             <Button variant="outlined" component={RouterLink} to="#" size="small">
                               File
                             </Button>
-                          </TableCell>
+                          </TableCell> */}
 
                           <TableCell align="right">
                             <OptionsMenu />

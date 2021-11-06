@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { sentenceCase } from 'change-case';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 //
 import axios from 'axios';
 // material
@@ -80,6 +80,8 @@ const colorMap = new Map([
 ]);
 
 export default function AdminUnreviewed() {
+  const navigate = useNavigate();
+
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
 
@@ -177,7 +179,15 @@ export default function AdminUnreviewed() {
                       } = row;
 
                       return (
-                        <TableRow hover key={id} tabIndex={-1}>
+                        <TableRow
+                          hover
+                          key={id}
+                          tabIndex={-1}
+                          sx={{ cursor: 'pointer' }}
+                          onClick={() => {
+                            navigate(`/admin/review/yXBqJ42ms0n2jUFwMEAt`);
+                          }}
+                        >
                           <TableCell component="th" scope="row" align="center">
                             <Typography variant="subtitle2">{branch}</Typography>
                           </TableCell>
