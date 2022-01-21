@@ -84,9 +84,9 @@ export default function DashboardNavbar({ onOpenSidebar, updateUser }) {
     setIsLoading(false);
   };
 
-  const onAutoLoadFinished = (res) => {
-    setIsLoading(false);
-  };
+  // const onAutoLoadFinished = (res) => {
+  //   setIsLoading(false);
+  // };
 
   const AuthBar = () => {
     if (!user)
@@ -108,7 +108,7 @@ export default function DashboardNavbar({ onOpenSidebar, updateUser }) {
           cookiePolicy="single_host_origin"
           icon={false}
           padding={100}
-          onAutoLoadFinished={onAutoLoadFinished}
+          // onAutoLoadFinished={onAutoLoadFinished}
         />
       );
 

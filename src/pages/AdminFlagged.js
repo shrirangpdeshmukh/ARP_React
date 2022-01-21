@@ -1,6 +1,9 @@
 import { sentenceCase } from 'change-case';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+// axios
+import axios from 'axios';
+
 // material
 import {
   Card,
@@ -15,7 +18,10 @@ import {
   Typography,
   TableContainer,
   TablePagination,
-  TableHead
+  TableHead,
+  CircularProgress,
+  Snackbar,
+  Alert
 } from '@mui/material';
 // components
 import Page from '../components/Page';
@@ -23,7 +29,7 @@ import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
 import { OptionsMenu } from '../components/_dashboard/admin_flagged';
 //
-import USERLIST from '../_mocks_/user';
+// import USERLIST from '../_mocks_/user';
 
 // ----------------------------------------------------------------------
 
@@ -45,7 +51,32 @@ const colorMap = new Map([
   ['irrelevant', 'success']
 ]);
 
+const seperateFlagReasons = (flagReason) => {
+  const flagReasons = {
+    unclear: 0,
+    irrelevant: 0,
+    explicit: 0,
+    duplicate: 0
+  };
+
+  flagReason.forEach((reason) => {
+    flagReasons[reason.toLowerCase()] = flagReasons[reason.toLowerCase()] + 1;
+  });
+
+  return flagReasons;
+};
+
 export default function AdminFlagged() {
+  const [loadMsg, setLoadMsg] = useState('Loading Flagged Resources. Please be patient ...');
+  const [resources, setResources] = useState([]);
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [serverResponse, setServerResponse] = useState({ message: '', severity: 'info' });
+
+  const handleClose = () => {
+    setSnackbarOpen(false);
+  };
+
   const [page, setPage] = useState(0);
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -59,9 +90,86 @@ export default function AdminFlagged() {
     setPage(0);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - resources.length) : 0;
 
-  const filteredUsers = USERLIST;
+  const filteredUsers = resources;
+
+  const getFlaggedResources = () => {
+    axios
+      .get('http://localhost:5000/arpbackend-df561/us-central1/app/admin/flagged', {
+        withCredentials: true
+      })
+      .then((response) => {
+        console.log(response);
+        setResources(response.data);
+        setLoadMsg(null);
+      })
+      .catch((err) => {
+        console.log(err);
+        window.alert('Something went wrong');
+      });
+  };
+
+  const clearFlagsOfAResource = (subjectCode, resourceId) => {
+    const branch = subjectCode.substring(0, 2);
+
+    console.log('Called Clear Flags');
+    console.log(localStorage.getItem('jwt'));
+    axios
+      .put(
+        `http://localhost:5000/arpbackend-df561/us-central1/app/admin/flag-clear/studyResources/branches/${branch}/subjects/${subjectCode}/resources/${resourceId}`,
+        {},
+        { withCredentials: true }
+      )
+      .then((response) => {
+        console.log(response);
+        if (response.status === 204) {
+          setServerResponse({ message: 'Flag Cleared Successfully', severity: 'success' });
+          setSnackbarOpen(true);
+          const newResoures = [...resources];
+          const index = newResoures.findIndex((resource) => resource.resourceId === resourceId);
+          newResoures.splice(index, 1);
+          setResources(newResoures);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setServerResponse({ message: err.response.data.error, severity: 'error' });
+        setSnackbarOpen(true);
+      });
+  };
+
+  const deleteResource = (subjectCode, resourceId) => {
+    const branch = subjectCode.substring(0, 2);
+
+    console.log('Called Delte File');
+
+    axios
+      .delete(
+        `http://localhost:5000/arpbackend-df561/us-central1/app/studyResources/branches/${branch}/subjects/${subjectCode}/resources/${resourceId}`,
+        { withCredentials: true }
+      )
+      .then((response) => {
+        console.log(response);
+        if (response.status === 201) {
+          setServerResponse({ message: 'File Deleted Successfully', severity: 'success' });
+          setSnackbarOpen(true);
+          const newResoures = [...resources];
+          const index = newResoures.findIndex((resource) => resource.resourceId === resourceId);
+          newResoures.splice(index, 1);
+          setResources(newResoures);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setServerResponse({ message: err.response.data.error, severity: 'error' });
+        setSnackbarOpen(true);
+      });
+  };
+
+  useEffect(() => {
+    getFlaggedResources();
+  }, []);
 
   return (
     <Page title="Admin | Flagged | ARP">
@@ -72,99 +180,150 @@ export default function AdminFlagged() {
           </Typography>
         </Stack>
 
-        <Card sx={{ my: 5 }}>
-          <Scrollbar>
-            <TableContainer sx={{ minWidth: 600 }}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    {TABLE_HEAD.map((headCell) => (
-                      <TableCell key={headCell.id} align="left" width={headCell.width}>
-                        {headCell.label}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
+        <Snackbar
+          open={snackbarOpen}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'center'
+          }}
+          autoHideDuration={6000}
+          onClose={handleClose}
+        >
+          <Alert onClose={handleClose} severity={serverResponse.severity} sx={{ width: '100%' }}>
+            {serverResponse.message}
+          </Alert>
+        </Snackbar>
 
-                <TableBody>
-                  {filteredUsers
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row) => {
-                      const { id, description, sem, courseId, courseName, branch, flagReasons } =
-                        row;
+        {!loadMsg ? (
+          <Card sx={{ my: 5 }}>
+            <Scrollbar>
+              <TableContainer sx={{ minWidth: 600 }}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      {TABLE_HEAD.map((headCell) => (
+                        <TableCell key={headCell.id} align="left" width={headCell.width}>
+                          {headCell.label}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  </TableHead>
 
-                      // console.log(flagReasons);
+                  <TableBody>
+                    {filteredUsers
+                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      .map((row) => {
+                        const {
+                          resourceId,
+                          description,
+                          semester,
+                          year,
+                          subjectCode,
+                          subjectName,
+                          flagReason,
+                          downloadLink
+                        } = row;
 
-                      return (
-                        <TableRow
-                          hover
-                          key={id}
-                          tabIndex={-1}
-                          sx={{ cursor: 'pointer' }}
-                          onClick={() => {
-                            // open file
-                            // window.open();
-                          }}
-                        >
-                          <TableCell component="th" scope="row" align="center">
-                            <Typography variant="subtitle2">{branch}</Typography>
-                          </TableCell>
-                          <TableCell align="left">{courseId}</TableCell>
-                          <TableCell align="left">{courseName}</TableCell>
-                          <TableCell align="left">
-                            <Stack direction="column" spacing={1}>
-                              <Typography variant="subtitle3">{sem}</Typography>
-                              <Typography variant="subtitle4">
-                                {description.length > 0 ? description : null}
+                        const flagReasons = seperateFlagReasons(flagReason);
+
+                        // console.log(flagReasons);
+
+                        return (
+                          <TableRow
+                            hover
+                            key={resourceId}
+                            tabIndex={-1}
+                            sx={{ cursor: 'pointer' }}
+                            onClick={() => {
+                              // open file
+                              window.open(downloadLink);
+                            }}
+                          >
+                            <TableCell component="th" scope="row" align="center">
+                              <Typography variant="subtitle2">
+                                {subjectCode.substring(0, 2)}
                               </Typography>
-                            </Stack>
-                          </TableCell>
-                          <TableCell align="left">
-                            <Box direction="row" spacing={1}>
-                              {Object.entries(flagReasons).map((reason) => {
-                                console.log(colorMap.get(reason[0]));
-                                if (reason[1] > 0)
-                                  return (
-                                    <Label variant="ghost" color={colorMap.get(reason[0])}>
-                                      {`${sentenceCase(reason[0])} x${reason[1]}`}
-                                    </Label>
-                                  );
-                                return null;
-                              })}
-                            </Box>
-                          </TableCell>
-                          {/* <TableCell align="left">
+                            </TableCell>
+                            <TableCell align="left">{subjectCode}</TableCell>
+                            <TableCell align="left">{subjectName}</TableCell>
+                            <TableCell align="left">
+                              <Stack direction="column" spacing={1}>
+                                <Typography variant="subtitle3">{`${semester} ${year}`}</Typography>
+                                <Typography variant="subtitle4">
+                                  {description.length > 0 ? description : null}
+                                </Typography>
+                              </Stack>
+                            </TableCell>
+                            <TableCell align="left">
+                              <Box direction="row" spacing={1}>
+                                {Object.entries(flagReasons).map((reason) => {
+                                  // console.log(colorMap.get(reason[0]));
+                                  if (reason[1] > 0)
+                                    return (
+                                      <Label
+                                        variant="ghost"
+                                        key={reason[0]}
+                                        color={colorMap.get(reason[0])}
+                                      >
+                                        {`${sentenceCase(reason[0])} x${reason[1]}`}
+                                      </Label>
+                                    );
+                                  return null;
+                                })}
+                              </Box>
+                            </TableCell>
+                            {/* <TableCell align="left">
                             <Button variant="outlined" component={RouterLink} to="#" size="small">
                               File
                             </Button>
                           </TableCell> */}
 
-                          <TableCell align="right">
-                            <OptionsMenu />
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 53 * emptyRows }}>
-                      <TableCell colSpan={6} />
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Scrollbar>
+                            <TableCell align="right">
+                              <OptionsMenu
+                                clearFlags={clearFlagsOfAResource}
+                                deleteFile={deleteResource}
+                                details={{ subjectCode, resourceId }}
+                              />
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    {emptyRows > 0 && (
+                      <TableRow style={{ height: 53 * emptyRows }}>
+                        <TableCell colSpan={6} />
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Scrollbar>
 
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={USERLIST.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Card>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={resources.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </Card>
+        ) : (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              flexDirection: 'column',
+              textAlign: 'center',
+              mt: 10
+            }}
+          >
+            <CircularProgress sx={{ margin: 'auto' }} />
+            <Typography variant="h5" sx={{ fontWeight: 600, my: 3 }}>
+              {loadMsg}
+            </Typography>
+          </Box>
+        )}
       </Container>
     </Page>
   );

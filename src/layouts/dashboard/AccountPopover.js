@@ -8,7 +8,7 @@ import { GoogleLogout } from 'react-google-login';
 // components
 import MenuPopover from '../../components/MenuPopover';
 //
-import account from '../../_mocks_/account';
+// import account from '../../_mocks_/account';
 
 // ----------------------------------------------------------------------
 
