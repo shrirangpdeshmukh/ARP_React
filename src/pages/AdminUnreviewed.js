@@ -18,7 +18,8 @@ import {
   TablePagination,
   Box,
   TableHead,
-  TableSortLabel
+  TableSortLabel,
+  CircularProgress
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 // components
@@ -27,7 +28,7 @@ import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
 import { OptionsMenu } from '../components/_dashboard/admin_unreviewed';
 //
-import USERLIST from '../_mocks_/user';
+// import USERLIST from '../_mocks_/user';
 
 // ----------------------------------------------------------------------
 
@@ -82,6 +83,9 @@ const colorMap = new Map([
 export default function AdminUnreviewed() {
   const navigate = useNavigate();
 
+  const [loadMsg, setLoadMsg] = useState('Loading Unreviewed Resources. Please be patient ...');
+  const [resources, setResources] = useState([]);
+
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
 
@@ -103,9 +107,25 @@ export default function AdminUnreviewed() {
     setPage(0);
   };
 
+  const USERLIST = resources;
+
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
 
   const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy));
+
+  const getUnreviewedResources = () => {
+    axios
+      .get(`https://arpbackend-df561.firebaseapp.com/admin/unreviewed`)
+      .then((res) => {
+        console.log(res.data);
+        setResources(res.data);
+        setLoadMsg(null);
+      })
+      .catch((err) => {
+        console.log(err);
+        window.alert('Something went wrong');
+      });
+  };
 
   useEffect(() => {
     // axios
@@ -116,6 +136,7 @@ export default function AdminUnreviewed() {
     //   .catch((err) => {
     //     console.log(err);
     //   });
+    getUnreviewedResources();
   }, []);
 
   return (
@@ -126,122 +147,139 @@ export default function AdminUnreviewed() {
             Unreviewed Resources
           </Typography>
         </Stack>
+        {!loadMsg ? (
+          <Card sx={{ my: 5 }}>
+            <Scrollbar>
+              <TableContainer sx={{ minWidth: 600 }}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      {TABLE_HEAD.map((headCell) => (
+                        <TableCell
+                          key={headCell.id}
+                          align="left"
+                          sortDirection={orderBy === headCell.id ? order : false}
+                          width={headCell.width}
+                        >
+                          {headCell.id === orderBy ? (
+                            <TableSortLabel
+                              active
+                              direction={order}
+                              onClick={(event) => {
+                                handleRequestSort(event, headCell.id);
+                              }}
+                            >
+                              {headCell.label}
 
-        <Card sx={{ my: 5 }}>
-          <Scrollbar>
-            <TableContainer sx={{ minWidth: 600 }}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    {TABLE_HEAD.map((headCell) => (
-                      <TableCell
-                        key={headCell.id}
-                        align="left"
-                        sortDirection={orderBy === headCell.id ? order : false}
-                        width={headCell.width}
-                      >
-                        {headCell.id === orderBy ? (
-                          <TableSortLabel
-                            active
-                            direction={order}
-                            onClick={(event) => {
-                              handleRequestSort(event, headCell.id);
+                              <Box sx={{ ...visuallyHidden }}>
+                                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                              </Box>
+                            </TableSortLabel>
+                          ) : (
+                            headCell.label
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  </TableHead>
+
+                  <TableBody>
+                    {filteredUsers
+                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      .map((row) => {
+                        const {
+                          type,
+                          description,
+                          semester,
+                          year,
+                          subjectCode,
+                          subjectName,
+                          resourceId,
+                          emailId: uploader
+                        } = row;
+
+                        return (
+                          <TableRow
+                            hover
+                            key={resourceId}
+                            tabIndex={-1}
+                            sx={{ cursor: 'pointer' }}
+                            onClick={() => {
+                              navigate(`/admin/review/yXBqJ42ms0n2jUFwMEAt`);
                             }}
                           >
-                            {headCell.label}
-
-                            <Box sx={{ ...visuallyHidden }}>
-                              {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                            </Box>
-                          </TableSortLabel>
-                        ) : (
-                          headCell.label
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-
-                <TableBody>
-                  {filteredUsers
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row) => {
-                      const {
-                        id,
-                        date,
-                        type,
-                        description,
-                        sem,
-                        courseId,
-                        courseName,
-                        branch,
-                        email
-                      } = row;
-
-                      return (
-                        <TableRow
-                          hover
-                          key={id}
-                          tabIndex={-1}
-                          sx={{ cursor: 'pointer' }}
-                          onClick={() => {
-                            navigate(`/admin/review/yXBqJ42ms0n2jUFwMEAt`);
-                          }}
-                        >
-                          <TableCell component="th" scope="row" align="center">
-                            <Typography variant="subtitle2">{branch}</Typography>
-                          </TableCell>
-                          <TableCell align="left">{courseId}</TableCell>
-                          <TableCell align="left">{courseName}</TableCell>
-                          <TableCell align="left">
-                            <Stack direction="column" spacing={1}>
-                              <Typography variant="subtitle3">{sem}</Typography>
-                              <Typography variant="subtitle4">
-                                {type !== 'midsem' && type !== 'endsem' && description.length > 0
-                                  ? description
-                                  : null}
+                            <TableCell component="th" scope="row" align="center">
+                              <Typography variant="subtitle2">
+                                {subjectCode.substring(0, 2)}
                               </Typography>
-                            </Stack>
-                          </TableCell>
-                          <TableCell align="left">
-                            <Label variant="ghost" color={colorMap.get(type)}>
-                              {sentenceCase(type)}
-                            </Label>
-                          </TableCell>
-                          {/* <TableCell align="left">
+                            </TableCell>
+                            <TableCell align="left">{subjectCode}</TableCell>
+                            <TableCell align="left">{subjectName}</TableCell>
+                            <TableCell align="left">
+                              <Stack direction="column" spacing={1}>
+                                <Typography variant="subtitle3">{`${semester} ${year}`}</Typography>
+                                <Typography variant="subtitle4">
+                                  {type !== 'midsem' && type !== 'endsem' && description.length > 0
+                                    ? description
+                                    : null}
+                                </Typography>
+                              </Stack>
+                            </TableCell>
+                            <TableCell align="left">
+                              <Label variant="ghost" color={colorMap.get(type)}>
+                                {sentenceCase(type)}
+                              </Label>
+                            </TableCell>
+                            {/* <TableCell align="left">
                             <Button variant="outlined" component={RouterLink} to="#" size="small">
                               File
                             </Button>
                           </TableCell> */}
-                          <TableCell align="left">{email}</TableCell>
-                          {/* <TableCell align="center">{date}</TableCell> */}
+                            <TableCell align="left">{uploader}</TableCell>
+                            {/* <TableCell align="center">{date}</TableCell> */}
 
-                          <TableCell align="right">
-                            <OptionsMenu />
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 53 * emptyRows }}>
-                      <TableCell colSpan={6} />
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Scrollbar>
+                            <TableCell align="right">
+                              <OptionsMenu />
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    {emptyRows > 0 && (
+                      <TableRow style={{ height: 53 * emptyRows }}>
+                        <TableCell colSpan={6} />
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Scrollbar>
 
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={USERLIST.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Card>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={USERLIST.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </Card>
+        ) : (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              flexDirection: 'column',
+              textAlign: 'center',
+              mt: 10
+            }}
+          >
+            <CircularProgress sx={{ margin: 'auto' }} />
+            <Typography variant="h5" sx={{ fontWeight: 600, my: 3 }}>
+              {loadMsg}
+            </Typography>
+          </Box>
+        )}
       </Container>
     </Page>
   );
