@@ -1,21 +1,42 @@
 // react
 import { useState } from 'react';
-//
+// react-router-dom
+import { useNavigate } from 'react-router-dom';
+// axios
+import axios from 'axios';
 // material
-import { Button, Container, Typography, TextField, MenuItem, Box } from '@mui/material';
+import {
+  Button,
+  Container,
+  Typography,
+  TextField,
+  MenuItem,
+  Box,
+  Snackbar,
+  Alert
+} from '@mui/material';
 // components
 import Page from '../components/Page';
 //
 import { branches as BRANCHES } from '../assets/data/branchData';
-import courseData from '../assets/data/courseData.json';
+// import courseData from '../assets/data/courseData.json';
 // ---------------------------------------------------------
 
 export default function AddCourse() {
+  const navigate = useNavigate();
+
   const [data, setData] = useState({
     course: '',
     id: '',
     branch: ''
   });
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [serverResponse, setServerResponse] = useState({ message: '', severity: 'info' });
+
+  const handleClose = () => {
+    setSnackbarOpen(false);
+  };
 
   const handleChange = (el, e) => {
     const curr = { ...data };
@@ -23,41 +44,60 @@ export default function AddCourse() {
     setData(curr);
   };
 
-  const courseIDValidation = (id) => {
-    if (id.length !== 7) return { valid: false, err: 'Course ID length should be equal to 7' };
+  // const courseIDValidation = (id) => {
+  //   if (id.length !== 7) return { valid: false, err: 'Course ID length should be equal to 7' };
 
-    const code = id.substr(0, 2);
-    const index = BRANCHES.findIndex((el) => el.code === code);
-    if (index < 0) return { valid: false, err: 'Branch Code in Course ID is invalid' };
+  //   const code = id.substr(0, 2);
+  //   const index = BRANCHES.findIndex((el) => el.code === code);
+  //   if (index < 0) return { valid: false, err: 'Branch Code in Course ID is invalid' };
 
-    if (
-      Number.isNaN(parseInt(id[2], 10)) ||
-      Number.isNaN(parseInt(id[4], 10)) ||
-      Number.isNaN(parseInt(id[5], 10)) ||
-      Number.isNaN(parseInt(id[6], 10))
-    )
-      return { valid: false, err: 'Course ID is invalid' };
+  //   if (
+  //     Number.isNaN(parseInt(id[2], 10)) ||
+  //     Number.isNaN(parseInt(id[4], 10)) ||
+  //     Number.isNaN(parseInt(id[5], 10)) ||
+  //     Number.isNaN(parseInt(id[6], 10))
+  //   )
+  //     return { valid: false, err: 'Course ID is invalid' };
 
-    if (!['L', 'P', 'T'].includes(id[3]))
-      return { valid: false, err: 'Fourth character in Course ID should be L, P or T' };
+  //   if (!['L', 'P', 'T'].includes(id[3]))
+  //     return { valid: false, err: 'Fourth character in Course ID should be L, P or T' };
 
-    return { valid: true, err: '' };
-  };
+  //   return { valid: true, err: '' };
+  // };
 
   const onSubmit = () => {
-    const { valid, err } = courseIDValidation(data.id);
-    if (!valid) {
-      window.alert(err);
-      return;
-    }
+    // const { valid, err } = courseIDValidation(data.id);
+    // if (!valid) {
+    //   window.alert(err);
+    //   return;
+    // }
 
-    const index = courseData.findIndex((el) => el.course === data.branch);
+    const courseData = JSON.parse(localStorage.getItem('branchSubjectList'));
+
+    const index = courseData.findIndex((el) => el.branchName === data.branch);
     if (index >= 0) {
-      console.log('Found Course');
-
-      const newCourse = { subjectName: data.course, subjectCode: data.id };
-
-      courseData[index].courses.push(newCourse);
+      console.log('Found Branch');
+      axios
+        .post(
+          `http://localhost:5000/arpbackend-df561/us-central1/app/admin/studyResources/branches/${data.branch}/subjects`,
+          { subjectName: data.course, subjectCode: data.id },
+          { withCredentials: true }
+        )
+        .then((response) => {
+          console.log(response);
+          if (response.status === 201) {
+            setServerResponse({ message: 'Course Added Successfully', severity: 'success' });
+            setSnackbarOpen(true);
+            setTimeout(() => {
+              navigate('/');
+            }, 5000);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          setServerResponse({ message: err.response.data.error, severity: 'error' });
+          setSnackbarOpen(true);
+        });
 
       // writeJsonFileSync('../assets/data/courseData.json', { courseData });
     }
@@ -71,6 +111,24 @@ export default function AddCourse() {
         </Typography>
         <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
           <Box sx={{ display: 'flex', flexDirection: 'column' }} py={5}>
+            <Snackbar
+              open={snackbarOpen}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'center'
+              }}
+              autoHideDuration={6000}
+              onClose={handleClose}
+            >
+              <Alert
+                onClose={handleClose}
+                severity={serverResponse.severity}
+                sx={{ width: '100%' }}
+              >
+                {serverResponse.message}
+              </Alert>
+            </Snackbar>
+
             <Box py={1} sx={{ display: 'flex' }}>
               <TextField
                 select
@@ -88,7 +146,7 @@ export default function AddCourse() {
                 {BRANCHES.map((option) => {
                   if (option.show)
                     return (
-                      <MenuItem key={option.icon} value={option.title}>
+                      <MenuItem key={option.icon} value={option.code}>
                         {option.subtitle}
                       </MenuItem>
                     );
@@ -104,7 +162,7 @@ export default function AddCourse() {
                   let text = e.target.value;
                   text = text.replace(/\s/g, '');
                   text = text.replace(/[^\w]/gi, '');
-                  text = text.substr(0, 7);
+                  text = text.substring(0, 7);
                   const curr = { ...data };
                   curr.id = text.toUpperCase();
                   setData(curr);
