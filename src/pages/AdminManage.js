@@ -19,15 +19,7 @@ import {
   TableContainer,
   TablePagination,
   TableHead,
-  Grid,
-  Dialog,
-  DialogTitle,
-  DialogActions,
-  FormControl,
-  InputLabel,
-  DialogContent,
-  Box,
-  TextField
+  Grid
 } from '@mui/material';
 // components
 import Page from '../components/Page';
@@ -106,13 +98,13 @@ export default function Administrators() {
                       {filteredUsers
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         .map((row) => {
-                          const { id, name, email, avatarUrl } = row;
+                          const { name, email } = row;
 
                           return (
-                            <TableRow hover key={id} tabIndex={-1}>
+                            <TableRow hover key={email} tabIndex={-1}>
                               <TableCell component="th" scope="row">
                                 <Stack direction="row" alignItems="center" spacing={2}>
-                                  <Avatar alt={name} src={avatarUrl} />
+                                  {/* <Avatar alt={name} src={avatarUrl} /> */}
                                   <Typography variant="subtitle2" noWrap>
                                     {name}
                                   </Typography>

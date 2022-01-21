@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 // react
 import { useState, useEffect } from 'react';
 //
@@ -6,33 +5,12 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // axios
 import axios from 'axios';
 // material
-import {
-  Card,
-  Table,
-  Stack,
-  Button,
-  Box,
-  TableHead,
-  TableRow,
-  TableBody,
-  TableCell,
-  Container,
-  Typography,
-  TableContainer,
-  CardHeader,
-  Grid,
-  IconButton,
-  Tooltip,
-  CircularProgress
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { Stack, Button, Box, Container, Typography, Grid, CircularProgress } from '@mui/material';
 // iconify
 import { Icon } from '@iconify/react';
 import plusFill from '@iconify/icons-eva/plus-fill';
-import flag from '@iconify/icons-bi/flag';
 // components
 import Page from '../components/Page';
-import Scrollbar from '../components/Scrollbar';
 import { TypeCard, FlagDialog } from '../components/_dashboard/course_page';
 //
 import USERLIST from '../_mocks_/user';

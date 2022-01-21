@@ -8,6 +8,7 @@ import { alpha, styled } from '@mui/material/styles';
 import { Box, Button, Stack, AppBar, Toolbar, IconButton, CircularProgress } from '@mui/material';
 // google-login
 import GoogleLogin from 'react-google-login';
+import axios from 'axios';
 // components
 import { MHidden } from '../../components/@material-extend';
 //
@@ -54,7 +55,27 @@ export default function DashboardNavbar({ onOpenSidebar, updateUser }) {
   }, [user]);
 
   const successResponseGoogle = (res) => {
-    setUser(res.profileObj);
+    console.log(res);
+    const emailUsed = res.profileObj.email;
+    const index = emailUsed.indexOf('@');
+    const domain = emailUsed.substr(index);
+    if (domain !== '@iitbbs.ac.in') {
+      alert('Use your IIT Bhubaneswar email id.');
+      return false;
+    }
+    axios
+      .post(
+        'http://localhost:5000/arpbackend-df561/us-central1/app/auth/login',
+        { tokenId: res.tokenId },
+        {
+          withCredentials: true
+        }
+      )
+      .then((response) => {
+        setUser({ ...res.profileObj, role: response.data.user.role });
+      })
+      .catch((err) => console.log(err));
+
     setIsLoading(false);
   };
 
