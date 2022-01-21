@@ -53,14 +53,16 @@ export const branches = [
     color: 'success',
     icon: 'seocs',
     title: 'SEOCS',
-    subtitle: 'School of Earth, Ocean and Climate Sciences'
+    subtitle: 'School of Earth, Ocean and Climate Sciences',
+    code: 'SEOCS'
   },
   {
     show: true,
     color: 'primary',
     icon: 'shssm',
     title: 'SHSS&M',
-    subtitle: 'School of Humanities, Social Sciences and Management'
+    subtitle: 'School of Humanities, Social Sciences and Management',
+    code: 'HS'
   },
   { show: true, color: 'secondary', icon: 'others', title: 'Others', subtitle: 'IDT Courses' },
   { show: false, title: 'MA', subtitle: 'Maths', code: 'MA' },

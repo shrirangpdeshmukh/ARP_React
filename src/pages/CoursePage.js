@@ -16,7 +16,7 @@ import { TypeCard, FlagDialog } from '../components/_dashboard/course_page';
 import USERLIST from '../_mocks_/user';
 
 import { branches } from '../assets/data/branchData';
-import courseData from '../assets/data/courseData.json';
+// import courseData from '../assets/data/courseData.json';
 
 // ----------------------------------------------------------------------
 
@@ -81,17 +81,19 @@ export default function CoursePage() {
     //     console.log(err);
     //   });
 
+    const courseData = JSON.parse(localStorage.getItem('branchSubjectList'));
+
     let index = -1;
     let ind = -1;
     index = courseData.findIndex((el) => {
-      ind = el.courses.findIndex((elem) => elem.subjectCode === id);
+      ind = el.data.findIndex((elem) => elem.subjectCode === id);
       return ind >= 0;
     });
 
     if (index < 0 || ind < 0) navigate('/404', { replace: 'true' });
     else {
-      setCourseName(courseData[index].courses[ind].subjectName);
-      setCourseCode(courseData[index].courses[ind].subjectCode);
+      setCourseName(courseData[index].data[ind].subjectName);
+      setCourseCode(courseData[index].data[ind].subjectCode);
       getResources(branch, id);
     }
   };
@@ -114,7 +116,7 @@ export default function CoursePage() {
     const code = url.split('/')[2];
 
     const index = branches.findIndex(
-      (el) => el.code && el.code.toLowerCase() === code.substr(0, 2).toLowerCase()
+      (el) => el.code && el.code.toLowerCase() === code.substring(0, 2).toLowerCase()
     );
 
     if (index < 0) navigate('/404', { replace: true });

@@ -38,7 +38,7 @@ import Scrollbar from '../components/Scrollbar';
 import SearchNotFound from '../components/SearchNotFound';
 
 import { branches } from '../assets/data/branchData';
-import courseData from '../assets/data/courseData.json';
+// import courseData from '../assets/data/courseData.json';
 
 // ----------------------------------------------------------------------
 
@@ -121,7 +121,7 @@ export default function BranchPage() {
     if (courses && courses.length > 0) setFetched(true);
   }, [courses]);
 
-  const getCourses = (course) => {
+  const getCourses = (branch) => {
     // axios
     //   .get(`https://arpbackend-df561.firebaseapp.com/studyResources/branches/${course}`)
     //   .then((res) => {
@@ -134,8 +134,13 @@ export default function BranchPage() {
     //     console.log(err);
     //     setFetched(true);
     //   });
-    const index = courseData.findIndex((el) => el.course === course);
-    if (index >= 0) setCourses(courseData[index].courses);
+
+    const courseData = JSON.parse(localStorage.getItem('branchSubjectList'));
+
+    console.log(courseData);
+
+    const index = courseData.findIndex((el) => el.branchName === branch);
+    if (index >= 0) setCourses(courseData[index].data);
     setFetched(true);
   };
 
@@ -150,7 +155,7 @@ export default function BranchPage() {
     else {
       setBranch(branches[index].subtitle);
       setBranchCode(branches[index].title);
-      getCourses(branches[index].title);
+      getCourses(branches[index].code);
     }
   }, []);
 
