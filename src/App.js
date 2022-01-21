@@ -39,8 +39,6 @@ const getAllSubjects = async () => {
     })
     .catch((error) => {
       console.error(error);
-      console.log(error.message);
-      console.log(error.response);
       window.alert(error.message);
     });
   // return jsArray;

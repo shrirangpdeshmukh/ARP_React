@@ -17,10 +17,11 @@ import {
 
 AdditionDialog.propTypes = {
   open: PropTypes.bool,
-  handleClose: PropTypes.func
+  handleClose: PropTypes.func,
+  onSubmit: PropTypes.func
 };
 
-export default function AdditionDialog({ handleClose, open }) {
+export default function AdditionDialog({ handleClose, open, onSubmit }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
 
@@ -28,6 +29,11 @@ export default function AdditionDialog({ handleClose, open }) {
     handleClose();
     setName('');
     setEmail('');
+  };
+
+  const submitHandler = () => {
+    onSubmit(name, email);
+    closeHandler();
   };
 
   return (
@@ -63,7 +69,7 @@ export default function AdditionDialog({ handleClose, open }) {
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button disabled={!name || !email} onClick={closeHandler}>
+        <Button disabled={!name || !email} onClick={submitHandler}>
           Add
         </Button>
         <Button onClick={closeHandler}>Close</Button>

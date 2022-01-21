@@ -114,7 +114,6 @@ export default function AdminFlagged() {
     const branch = subjectCode.substring(0, 2);
 
     console.log('Called Clear Flags');
-    console.log(localStorage.getItem('jwt'));
     axios
       .put(
         `http://localhost:5000/arpbackend-df561/us-central1/app/admin/flag-clear/studyResources/branches/${branch}/subjects/${subjectCode}/resources/${resourceId}`,

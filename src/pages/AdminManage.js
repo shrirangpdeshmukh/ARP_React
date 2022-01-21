@@ -1,6 +1,6 @@
 import { filter } from 'lodash';
 import { Icon } from '@iconify/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import plusFill from '@iconify/icons-eva/plus-fill';
 import personRemoveFill from '@iconify/icons-eva/person-remove-fill';
 import { Link as RouterLink } from 'react-router-dom';
@@ -19,14 +19,17 @@ import {
   TableContainer,
   TablePagination,
   TableHead,
-  Grid
+  Grid,
+  Snackbar,
+  Alert
 } from '@mui/material';
+import axios from 'axios';
+
 // components
 import Page from '../components/Page';
 import Scrollbar from '../components/Scrollbar';
 import { AdditionDialog } from '../components/_dashboard/admin_administrator';
 // import { UserMoreMenu } from '../components/_dashboard/user';
-//
 import USERLIST from '../_mocks_/user';
 
 // ----------------------------------------------------------------------
@@ -40,6 +43,14 @@ const TABLE_HEAD = [
 // ----------------------------------------------------------------------
 
 export default function Administrators() {
+  const [adminsList, setAdminsList] = useState([]);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [serverResponse, setServerResponse] = useState({ message: '', severity: 'info' });
+
+  const handleClose = () => {
+    setSnackbarOpen(false);
+  };
+
   const [page, setPage] = useState(0);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -63,7 +74,73 @@ export default function Administrators() {
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
 
-  const filteredUsers = USERLIST;
+  const filteredUsers = adminsList;
+
+  const getAllAdmins = () => {
+    axios
+      .get('http://localhost:5000/arpbackend-df561/us-central1/app/super-admin/admin', {
+        withCredentials: true
+      })
+      .then((response) => {
+        setAdminsList(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+        window.alert(error.message);
+      });
+  };
+
+  const removeAdmin = (email) => {
+    axios
+      .delete(
+        `http://localhost:5000/arpbackend-df561/us-central1/app/super-admin/admin?email=${email}`,
+        { withCredentials: true }
+      )
+      .then((response) => {
+        console.log(response);
+        if (response.status === 204) {
+          setServerResponse({ message: 'Admin Removed Successfully', severity: 'success' });
+          setSnackbarOpen(true);
+          const newAdmins = [...adminsList];
+          const index = adminsList.findIndex((admin) => admin.email === email);
+          newAdmins.splice(index, 1);
+          setAdminsList(newAdmins);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setServerResponse({ message: err.response.data.error, severity: 'error' });
+        setSnackbarOpen(true);
+      });
+  };
+
+  const addAdmin = (name, email) => {
+    axios
+      .post(
+        'http://localhost:5000/arpbackend-df561/us-central1/app/super-admin/admin',
+        { name, email },
+        { withCredentials: true }
+      )
+      .then((response) => {
+        console.log(response);
+        if (response.status === 201) {
+          setServerResponse({ message: 'Admin Added Successfully', severity: 'success' });
+          setSnackbarOpen(true);
+          const newAdmins = [...adminsList];
+          newAdmins.push({ name, email });
+          setAdminsList(newAdmins);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setServerResponse({ message: err.response.data.error, severity: 'error' });
+        setSnackbarOpen(true);
+      });
+  };
+
+  useEffect(() => {
+    getAllAdmins();
+  }, []);
 
   return (
     <Page title="Administrators | ARP">
@@ -76,8 +153,20 @@ export default function Administrators() {
             New Admin
           </Button>
         </Stack>
-
-        <AdditionDialog open={dialogOpen} handleClose={closeDialog} />
+        <Snackbar
+          open={snackbarOpen}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'center'
+          }}
+          autoHideDuration={6000}
+          onClose={handleClose}
+        >
+          <Alert onClose={handleClose} severity={serverResponse.severity} sx={{ width: '100%' }}>
+            {serverResponse.message}
+          </Alert>
+        </Snackbar>
+        <AdditionDialog open={dialogOpen} handleClose={closeDialog} onSubmit={addAdmin} />
         <Grid container>
           <Grid item xl={2} sm={12} md={1} />
           <Grid item xl={8} sm={12} md={10}>
@@ -115,8 +204,9 @@ export default function Administrators() {
                               <TableCell align="right">
                                 <Button
                                   variant="outlined"
-                                  component={RouterLink}
-                                  to="#"
+                                  onClick={() => {
+                                    removeAdmin(email);
+                                  }}
                                   startIcon={<Icon icon={personRemoveFill} />}
                                   color="error"
                                 >

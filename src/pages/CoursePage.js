@@ -13,7 +13,7 @@ import plusFill from '@iconify/icons-eva/plus-fill';
 import Page from '../components/Page';
 import { TypeCard, FlagDialog } from '../components/_dashboard/course_page';
 //
-import USERLIST from '../_mocks_/user';
+// import USERLIST from '../_mocks_/user';
 
 import { branches } from '../assets/data/branchData';
 // import courseData from '../assets/data/courseData.json';
