@@ -66,7 +66,9 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar, user }
         </Stack>
       </Box>
 
-      {user ? (
+      <Box sx={{ flexGrow: 1 }} />
+
+      {/* {user ? (
         <Box sx={{ mb: 5, mx: 2.5 }}>
           <Link underline="none" component={RouterLink} to="#">
             <AccountStyle>
@@ -82,7 +84,7 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar, user }
             </AccountStyle>
           </Link>
         </Box>
-      ) : null}
+      ) : null} */}
 
       <NavSection navConfig={sidebarConfig} />
 
@@ -91,7 +93,7 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar, user }
       <Box sx={{ px: 2.5, pb: 3, mt: 10 }}>
         <Stack
           alignItems="center"
-          spacing={3}
+          spacing={1}
           sx={{
             p: 2.5,
             pt: 5,
@@ -103,7 +105,7 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar, user }
           <Box component="img" src={neuro} sx={{ width: 100, position: 'absolute', top: -50 }} />
 
           <Box sx={{ textAlign: 'center' }}>
-            <Typography gutterBottom variant="h6">
+            <Typography gutterBottom variant="subtitle1">
               Queries?
             </Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
