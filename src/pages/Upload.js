@@ -4,9 +4,15 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 // material
 import { Button, Container, Typography, TextField, MenuItem, Box } from '@mui/material';
+// firebase
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+// axios
+import axios from 'axios';
 // components
 import Page from '../components/Page';
 import FilePreview from '../components/_dashboard/upload/FilePreview';
+// firebase
+import { storage } from '../firebaseConfig';
 
 // ---------------------------------------------------------
 
@@ -65,6 +71,103 @@ export default function Upload() {
       window.history.replaceState(null, document.title);
     }
   }, []);
+
+  const submitButtonEnable =
+    data.course && data.sem && data.type && data.year && data.desc && data.id && file;
+
+  const postData = (URL, timestamp) => {
+    const body = {
+      // emailId: formData.get("email"),
+      subjectName: data.course,
+      semester: data.sem,
+      subjectCode: data.id,
+      type: data.type,
+      year: data.year,
+      downloadLink: URL,
+      storageReference: `gs://arpbackend-df561.appspot.com/${timestamp}`,
+      description: data.desc
+    };
+
+    console.log(URL);
+    if (!URL) return;
+
+    const branch = body.subjectCode.substring(0, 2);
+    axios
+      .post(
+        `http://localhost:5000/arpbackend-df561/us-central1/app/studyResources/branches/${branch}/subjects/${body.subjectCode}`,
+        body,
+        { withCredentials: true }
+      )
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+
+  const submitHandler = async () => {
+    // DownloadURL
+    let URL;
+    // Create the file metadata
+    const metadata = {
+      contentType: 'file/pdf'
+    };
+
+    // Upload file and metadata to the object 'images/mountains.jpg'
+    const timestamp = new Date().valueOf();
+    const fileName = `${data.id}:${timestamp}.pdf`;
+
+    // Upload file and metadata to the object
+    const storageRef = ref(storage, fileName);
+    const uploadTask = uploadBytesResumable(storageRef, file, metadata);
+
+    // Listen for state changes, errors, and completion of the upload.
+    uploadTask.on(
+      'state_changed',
+      (snapshot) => {
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log(`Upload is ${progress} % done`);
+        switch (snapshot.state) {
+          case 'paused':
+            console.log('Upload is paused');
+            break;
+          case 'running':
+            console.log('Upload is running');
+            break;
+          default:
+            console.log('Upload is fine');
+        }
+      },
+      (error) => {
+        // A full list of error codes is available at
+        // https://firebase.google.com/docs/storage/web/handle-errors
+        switch (error.code) {
+          case 'storage/unauthorized':
+            // User doesn't have permission to access the object
+            break;
+          case 'storage/canceled':
+            // User canceled the upload
+            break;
+          // ...
+          case 'storage/unknown':
+            // Unknown error occurred, inspect error.serverResponse
+            break;
+          default:
+            console.log('break');
+        }
+      },
+      () => {
+        // Upload completed successfully, now we can get the download URL
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          console.log('File available at', downloadURL);
+          URL = downloadURL;
+          postData(URL, timestamp);
+        });
+      }
+    );
+  };
 
   return (
     <Page title="Upload | ARP">
@@ -150,7 +253,7 @@ export default function Upload() {
                   let text = e.target.value;
                   text = text.replace(/\s/g, '');
                   text = text.replace(/[^\w]/gi, '');
-                  text = text.substr(0, 7);
+                  text = text.substring(0, 7);
                   const curr = { ...data };
                   curr.id = text.toUpperCase();
                   setData(curr);
@@ -254,7 +357,12 @@ export default function Upload() {
 
         <Box sx={{ textAlign: 'right' }}>
           <Button sx={{ margin: '20px 10px' }}>Cancel</Button>
-          <Button variant="contained" sx={{ margin: '20px 10px' }}>
+          <Button
+            variant="contained"
+            sx={{ margin: '20px 10px' }}
+            onClick={() => submitHandler()}
+            // disabled={!submitButtonEnable}
+          >
             Submit
           </Button>
         </Box>
