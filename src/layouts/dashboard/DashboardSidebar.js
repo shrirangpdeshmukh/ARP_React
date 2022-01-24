@@ -86,7 +86,7 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar, user }
         </Box>
       ) : null} */}
 
-      <NavSection navConfig={sidebarConfig} />
+      <NavSection navConfig={sidebarConfig} user={user} />
 
       <Box sx={{ flexGrow: 1 }} />
 

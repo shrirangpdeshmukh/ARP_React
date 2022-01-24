@@ -141,7 +141,7 @@ export default function AdminFlagged() {
   const deleteResource = (subjectCode, resourceId) => {
     const branch = subjectCode.substring(0, 2);
 
-    console.log('Called Delte File');
+    console.log('Called Delete File');
 
     axios
       .delete(
@@ -150,7 +150,7 @@ export default function AdminFlagged() {
       )
       .then((response) => {
         console.log(response);
-        if (response.status === 201) {
+        if (response.status === 204) {
           setServerResponse({ message: 'File Deleted Successfully', severity: 'success' });
           setSnackbarOpen(true);
           const newResoures = [...resources];

@@ -64,7 +64,14 @@ export const branches = [
     subtitle: 'School of Humanities, Social Sciences and Management',
     code: 'HS'
   },
-  { show: true, color: 'secondary', icon: 'others', title: 'Others', subtitle: 'IDT Courses' },
+  {
+    show: true,
+    color: 'secondary',
+    icon: 'others',
+    title: 'Others',
+    subtitle: 'IDT Courses',
+    code: 'ID'
+  },
   { show: false, title: 'MA', subtitle: 'Maths', code: 'MA' },
   { show: false, title: 'PH', subtitle: 'Physics', code: 'PH' },
   { show: false, title: 'CY', subtitle: 'Chemistry', code: 'CY' },

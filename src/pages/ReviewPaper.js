@@ -1,7 +1,9 @@
 // react
 import { useState, useEffect } from 'react';
 //
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+// axios
+import axios from 'axios';
 // material
 import {
   Button,
@@ -10,8 +12,10 @@ import {
   TextField,
   MenuItem,
   Box,
-  IconButton,
-  Stack
+  // IconButton,
+  Stack,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import { Icon } from '@iconify/react';
 import editFill from '@iconify/icons-eva/edit-fill';
@@ -19,6 +23,7 @@ import refreshFill from '@iconify/icons-eva/refresh-fill';
 // components
 import Page from '../components/Page';
 import FilePreview from '../components/_dashboard/upload/FilePreview';
+import ConfirmationDialog from '../components/_dashboard/review/ConfirmationDialog';
 
 // ---------------------------------------------------------
 
@@ -43,6 +48,7 @@ for (let i = new Date().getFullYear(); i > 2015; i -= 1) {
 
 export default function Upload() {
   const { state } = useLocation();
+  const navigate = useNavigate();
 
   const [fileUrl, setFileUrl] = useState(
     'https://firebasestorage.googleapis.com/v0/b/arpbackend-df561.appspot.com/o/CS1L001%3A1576825735435.pdf?alt=media&token=9cc12636-463e-4d05-a04b-0c1478ffd13c'
@@ -50,13 +56,14 @@ export default function Upload() {
   const [edit, setEdit] = useState(false);
 
   const [initData, setInitData] = useState({
-    course: 'Introduction to Programming and Data Structures',
-    id: 'CS1L001',
-    type: 'endsem',
-    sem: 'autumn',
-    year: '2016',
+    course: '',
+    id: '',
+    type: '',
+    sem: '',
+    year: '',
     desc: '',
-    email: 'pb20@iitbbs.ac.in'
+    resourceId: '',
+    uploader: ''
   });
 
   const [data, setData] = useState({
@@ -66,8 +73,16 @@ export default function Upload() {
     sem: '',
     year: '',
     desc: '',
-    email: ''
+    resourceId: '',
+    uploader: ''
   });
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [serverResponse, setServerResponse] = useState({ message: '', severity: 'info' });
+
+  const handleClose = () => {
+    setSnackbarOpen(false);
+  };
 
   const handleChange = (el, e) => {
     const curr = { ...data };
@@ -75,17 +90,104 @@ export default function Upload() {
     setData(curr);
   };
 
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogDetails, setDialogDetails] = useState({ title: '', description: '', action: null });
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+  };
+
+  const acceptReview = () => {
+    console.log('Called Accept File');
+
+    const branch = data.id.substring(0, 2);
+    const body = {
+      subjectName: data.course,
+      subjectCode: data.id,
+      semester: data.sem,
+      type: data.type,
+      year: data.year,
+      description: data.desc
+    };
+    console.log(body);
+
+    axios
+      .put(
+        `http://localhost:5000/arpbackend-df561/us-central1/app/admin/review/studyResources/branches/${branch}/subjects/${data.id}/resources/${data.resourceId}`,
+        body,
+        { withCredentials: true }
+      )
+      .then((response) => {
+        console.log(response);
+        setServerResponse({ message: 'File Accepted Successfully', severity: 'success' });
+        setSnackbarOpen(true);
+      })
+      .catch((error) => {
+        console.error(error);
+        setServerResponse({ message: error.response.data.error, severity: 'error' });
+        setSnackbarOpen(true);
+      });
+  };
+
+  const deleteResource = () => {
+    console.log('Called Delete File');
+
+    const branch = data.id.substring(0, 2);
+
+    axios
+      .delete(
+        `http://localhost:5000/arpbackend-df561/us-central1/app/studyResources/branches/${branch}/subjects/${data.id}/resources/${data.resourceId}`,
+        { withCredentials: true }
+      )
+      .then((response) => {
+        console.log(response);
+        if (response.status === 204) {
+          setServerResponse({ message: 'File Deleted Successfully', severity: 'success' });
+          setSnackbarOpen(true);
+          setTimeout(() => {
+            navigate('/');
+          }, 5000);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setServerResponse({ message: err.response.data.error, severity: 'error' });
+        setSnackbarOpen(true);
+      });
+  };
+
+  const mapData = (state) => {
+    const curr = { ...data };
+    curr.course = state.courseName;
+    curr.id = state.courseCode;
+    curr.type = state.type;
+    curr.sem = state.sem;
+    curr.year = state.year;
+    curr.desc = state.desc;
+    curr.resourceId = state.resourceId;
+    curr.uploader = state.uploader;
+    return curr;
+  };
+
   useEffect(() => {
     if (state) {
-      const curr = { ...data };
-      curr.course = state.courseName;
-      curr.id = state.courseCode;
+      // console.log(state);
+
+      const curr = mapData(state);
+      setFileUrl(state.fileURL);
       setData(curr);
+      setInitData(curr);
 
       window.history.replaceState(null, document.title);
+    } else {
+      const res = window.confirm('Something went wrong');
+      if (res) {
+        navigate('/');
+      }
+      console.log('No state');
     }
 
-    setData(initData);
+    // setData(initData);
   }, []);
 
   return (
@@ -95,6 +197,27 @@ export default function Upload() {
           <Typography variant="h4" sx={{ mb: 2 }}>
             Review
           </Typography>
+
+          <ConfirmationDialog
+            open={dialogOpen}
+            handleClose={handleDialogClose}
+            details={dialogDetails}
+          />
+
+          <Snackbar
+            open={snackbarOpen}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'center'
+            }}
+            autoHideDuration={6000}
+            onClose={handleClose}
+          >
+            <Alert onClose={handleClose} severity={serverResponse.severity} sx={{ width: '100%' }}>
+              {serverResponse.message}
+            </Alert>
+          </Snackbar>
+
           <Button
             variant={edit ? 'outlined' : 'contained'}
             startIcon={<Icon icon={edit ? refreshFill : editFill} />}
@@ -111,7 +234,7 @@ export default function Upload() {
           <Box sx={{ display: 'flex', flexDirection: 'column' }} py={2}>
             <Box sx={{ display: 'flex' }} pb={5}>
               <Typography sx={{ fontWeight: 600 }}>Uploaded by : &nbsp;</Typography>
-              <Typography>{initData.email}</Typography>
+              <Typography>{initData.uploader}</Typography>
             </Box>
 
             <Box py={1}>
@@ -259,8 +382,33 @@ export default function Upload() {
         </Box>
 
         <Box sx={{ textAlign: 'right' }}>
-          <Button sx={{ margin: '20px 10px' }}>Cancel</Button>
-          <Button variant="contained" sx={{ margin: '20px 10px' }}>
+          <Button
+            variant="contained"
+            color="error"
+            sx={{ margin: '20px 10px' }}
+            onClick={() => {
+              setDialogOpen(true);
+              setDialogDetails({
+                title: 'Delete the file?',
+                description: `This file with resource id ${state.resourceId} will be deleted`,
+                action: deleteResource
+              });
+            }}
+          >
+            Delete
+          </Button>
+          <Button
+            variant="contained"
+            sx={{ margin: '20px 10px' }}
+            onClick={() => {
+              setDialogOpen(true);
+              setDialogDetails({
+                title: 'Accept the file?',
+                description: `This file with resource id ${state.resourceId} will be marked as reviewed`,
+                action: acceptReview
+              });
+            }}
+          >
             Accept
           </Button>
         </Box>

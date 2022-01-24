@@ -1,9 +1,19 @@
 // react
 import { useState, useEffect } from 'react';
 //
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 // material
-import { Button, Container, Typography, TextField, MenuItem, Box } from '@mui/material';
+import {
+  Button,
+  Container,
+  Typography,
+  TextField,
+  MenuItem,
+  Box,
+  Autocomplete,
+  Snackbar,
+  Alert
+} from '@mui/material';
 // firebase
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 // axios
@@ -35,7 +45,26 @@ for (let i = new Date().getFullYear(); i > 2015; i -= 1) {
   YEAR_OPTIONS.push({ value: i.toString(), label: i.toString() });
 }
 
-export default function Upload() {
+const searchArray = JSON.parse(localStorage.getItem('searchArray'));
+// const courseNameArray = [{ label: '', id: '' }];
+// const courseIdArray = [{ label: '', id: '' }];
+const newArray = [''];
+
+// const combinedAr
+
+searchArray.forEach((item) => {
+  // courseNameArray.push({ label: item.information.subjectName, id: item.information.subjectCode });
+  // courseIdArray.push({ label: item.information.subjectCode, id: item.information.subjectName });
+  newArray.push({
+    label: `${item.information.subjectCode} : ${item.information.subjectName}`,
+    information: item.information
+  });
+});
+
+export default function Upload({ user }) {
+  // console.log(courseData);
+  const navigate = useNavigate();
+
   const { state } = useLocation();
 
   const [file, setFile] = useState(null);
@@ -61,7 +90,22 @@ export default function Upload() {
     setData(curr);
   };
 
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [serverResponse, setServerResponse] = useState({ message: '', severity: 'info' });
+
+  const handleClose = () => {
+    setSnackbarOpen(false);
+  };
+
   useEffect(() => {
+    if (!user) {
+      setServerResponse({
+        message: '            You not Logged. Please Log in with your institute email address.',
+        severity: 'error'
+      });
+      setSnackbarOpen(true);
+    }
+
     if (state) {
       const curr = { ...data };
       curr.course = state.courseName;
@@ -72,15 +116,12 @@ export default function Upload() {
     }
   }, []);
 
-  const submitButtonEnable =
-    data.course && data.sem && data.type && data.year && data.desc && data.id && file;
-
   const postData = (URL, timestamp) => {
     const body = {
       // emailId: formData.get("email"),
-      subjectName: data.course,
+      subjectName: data.course.information.subjectName,
       semester: data.sem,
-      subjectCode: data.id,
+      subjectCode: data.course.information.subjectCode,
       type: data.type,
       year: data.year,
       downloadLink: URL,
@@ -100,9 +141,18 @@ export default function Upload() {
       )
       .then((res) => {
         console.log(res);
+        if (res.status === 201) {
+          setServerResponse({ message: 'File Uploaded Successfully', severity: 'success' });
+          setSnackbarOpen(true);
+          setTimeout(() => {
+            navigate('/');
+          }, 5000);
+        }
       })
       .catch((err) => {
         console.error(err);
+        setServerResponse({ message: err.response.data.error, severity: 'error' });
+        setSnackbarOpen(true);
       });
   };
 
@@ -111,7 +161,7 @@ export default function Upload() {
     let URL;
     // Create the file metadata
     const metadata = {
-      contentType: 'file/pdf'
+      contentType: 'application/pdf'
     };
 
     // Upload file and metadata to the object 'images/mountains.jpg'
@@ -176,6 +226,20 @@ export default function Upload() {
           Upload
         </Typography>
 
+        <Snackbar
+          open={snackbarOpen}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'center'
+          }}
+          autoHideDuration={6000}
+          onClose={handleClose}
+        >
+          <Alert onClose={handleClose} severity={serverResponse.severity} sx={{ width: '100%' }}>
+            {serverResponse.message}
+          </Alert>
+        </Snackbar>
+
         <label htmlFor="file-resource" sx={{ cursor: 'pointer' }}>
           <Box
             sx={{ borderRadius: 2, bgcolor: 'grey.200', py: 5 }}
@@ -230,7 +294,40 @@ export default function Upload() {
         <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
           <Box sx={{ display: 'flex', flexDirection: 'column' }} py={5}>
             <Box py={1}>
-              <TextField
+              {/* <Autocomplete
+                value={data.course}
+                disablePortal
+                id="combo-box-demo"
+                options={courseNameArray}
+                sx={{ width: 300 }}
+                renderInput={(params) => (
+                  <TextField {...params} label="Course name" sx={{ width: 'min(80vw,500px)' }} />
+                )}
+                onChange={(event, newValue) => {
+                  const curr = { ...data };
+                  curr.course = newValue ? newValue.label : '';
+                  curr.id = newValue ? newValue.id : '';
+                  setData(curr);
+                }}
+              /> */}
+
+              <Autocomplete
+                // value={data.course}
+                disablePortal
+                id="combo-box-demo"
+                options={newArray}
+                sx={{ width: 300 }}
+                renderInput={(params) => (
+                  <TextField {...params} label="Course name" sx={{ width: 'min(80vw,500px)' }} />
+                )}
+                onChange={(event, newValue) => {
+                  const curr = { ...data };
+                  curr.course = newValue;
+                  setData(curr);
+                }}
+              />
+
+              {/* <TextField
                 label="Course name"
                 sx={{ width: 'min(80vw,500px)' }}
                 value={data.course}
@@ -242,11 +339,28 @@ export default function Upload() {
                   curr.course = text.trimStart();
                   setData(curr);
                 }}
-              />
+              /> */}
             </Box>
 
-            <Box py={1}>
-              <TextField
+            {/* <Box py={1}>
+              <Autocomplete
+                value={data.id}
+                disablePortal
+                id="combo-box-demo"
+                options={courseIdArray}
+                sx={{ width: 300 }}
+                renderInput={(params) => (
+                  <TextField {...params} label="Course ID" sx={{ width: 'min(80vw,500px)' }} />
+                )}
+                onChange={(event, newValue) => {
+                  const curr = { ...data };
+                  curr.id = newValue ? newValue.label : '';
+                  curr.course = newValue ? newValue.id : '';
+                  setData(curr);
+                }}
+              /> */}
+
+            {/* <TextField
                 label="Course ID"
                 value={data.id}
                 onChange={(e) => {
@@ -258,8 +372,8 @@ export default function Upload() {
                   curr.id = text.toUpperCase();
                   setData(curr);
                 }}
-              />
-            </Box>
+              /> */}
+            {/* </Box> */}
 
             <Box py={1} sx={{ display: 'flex' }}>
               <Typography sx={{ display: 'flex', alignItems: 'center', width: '160px' }}>

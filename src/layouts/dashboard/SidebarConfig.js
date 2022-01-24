@@ -14,32 +14,38 @@ const sidebarConfig = [
   {
     title: 'dashboard',
     path: '/app',
-    icon: getIcon(pieChart2Fill)
+    icon: getIcon(pieChart2Fill),
+    role: ['user', 'admin', 'superAdmin']
   },
   {
     title: 'upload',
     path: '/upload',
-    icon: getIcon(cloudUploadFill)
+    icon: getIcon(cloudUploadFill),
+    role: ['user', 'admin', 'superAdmin']
   },
   {
     title: 'manage admin',
     path: '/admin/manage',
-    icon: getIcon(peopleFill)
+    icon: getIcon(peopleFill),
+    role: ['superAdmin']
   },
   {
     title: 'Add Course',
     path: '/admin/addCourse',
-    icon: getIcon(plusCircleFilled)
+    icon: getIcon(plusCircleFilled),
+    role: ['admin', 'superAdmin']
   },
   {
     title: 'review resources',
     path: '/admin/unreviewed',
-    icon: getIcon(baselineRateReview)
+    icon: getIcon(baselineRateReview),
+    role: ['admin', 'superAdmin']
   },
   {
     title: 'review flags',
     path: '/admin/flagged',
-    icon: getIcon(bxsFlag)
+    icon: getIcon(bxsFlag),
+    role: ['admin', 'superAdmin']
   }
 ];
 

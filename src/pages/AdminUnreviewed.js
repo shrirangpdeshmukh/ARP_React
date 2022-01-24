@@ -37,11 +37,11 @@ const TABLE_HEAD = [
   { id: 'courseId', label: 'Course ID', width: '10%' },
   { id: 'courseName', label: 'Course Name', width: '26%' },
   { id: 'semester', label: 'Semester', width: '26%' },
-  { id: 'type', label: 'Type', width: '5%' },
+  { id: 'type', label: 'Type', width: '8%' },
   // { id: 'file', label: 'File', width: '7%' },
-  { id: 'user', label: 'Uploader', width: '10%' },
+  { id: 'user', label: 'Uploader', width: '10%' }
   // { id: 'date', label: 'Date Uploaded', width: '15%' },
-  { id: '', width: '3%' }
+  // { id: '', width: '3%' }
 ];
 // ----------------------------------------------------------------------
 
@@ -128,14 +128,6 @@ export default function AdminUnreviewed() {
   };
 
   useEffect(() => {
-    // axios
-    //   .get(`https://arpbackend-df561.firebaseapp.com/admin/unreviewed`)
-    //   .then((res) => {
-    //     console.log(res.data);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
     getUnreviewedResources();
   }, []);
 
@@ -195,7 +187,8 @@ export default function AdminUnreviewed() {
                           subjectCode,
                           subjectName,
                           resourceId,
-                          emailId: uploader
+                          emailId: uploader,
+                          downloadLink
                         } = row;
 
                         return (
@@ -205,7 +198,19 @@ export default function AdminUnreviewed() {
                             tabIndex={-1}
                             sx={{ cursor: 'pointer' }}
                             onClick={() => {
-                              navigate(`/admin/review/yXBqJ42ms0n2jUFwMEAt`);
+                              navigate(`/admin/review/${resourceId}`, {
+                                state: {
+                                  resourceId,
+                                  type,
+                                  sem: semester,
+                                  courseName: subjectName,
+                                  courseCode: subjectCode,
+                                  year,
+                                  desc: description,
+                                  uploader,
+                                  fileURL: downloadLink
+                                }
+                              });
                             }}
                           >
                             <TableCell component="th" scope="row" align="center">
@@ -238,9 +243,9 @@ export default function AdminUnreviewed() {
                             <TableCell align="left">{uploader}</TableCell>
                             {/* <TableCell align="center">{date}</TableCell> */}
 
-                            <TableCell align="right">
+                            {/* <TableCell align="right">
                               <OptionsMenu />
-                            </TableCell>
+                            </TableCell> */}
                           </TableRow>
                         );
                       })}

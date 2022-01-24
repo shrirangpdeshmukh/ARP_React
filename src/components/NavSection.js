@@ -150,19 +150,24 @@ function NavItem({ item, active }) {
 }
 
 NavSection.propTypes = {
-  navConfig: PropTypes.array
+  navConfig: PropTypes.array,
+  user: PropTypes.object
 };
 
-export default function NavSection({ navConfig, ...other }) {
+export default function NavSection({ navConfig, user, ...other }) {
   const { pathname } = useLocation();
   const match = (path) => (path ? !!matchPath({ path, end: false }, pathname) : false);
+
+  const userRole = user && user.role ? user.role : 'user';
 
   return (
     <Box {...other}>
       <List disablePadding>
-        {navConfig.map((item) => (
-          <NavItem key={item.title} item={item} active={match} />
-        ))}
+        {navConfig.map((item) =>
+          item.role.includes(userRole) ? (
+            <NavItem key={item.title} item={item} active={match} />
+          ) : null
+        )}
       </List>
     </Box>
   );

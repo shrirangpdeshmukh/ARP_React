@@ -23,24 +23,34 @@ Router.propTypes = {
 };
 
 export default function Router({ user, updateUser }) {
-  return useRoutes([
+  const routes = [
     {
       path: '/',
       element: <DashboardLayout user={user} updateUser={updateUser} />,
       children: [
         { element: <Navigate to="/app" replace /> },
         { path: 'app', element: <DashboardApp /> },
-        { path: 'admin/manage', element: <AdminManage /> },
         { path: 'branch/:name', element: <BranchPage /> },
         { path: 'course/:code', element: <CoursePage /> },
-        { path: 'upload', element: <Upload /> },
-        { path: 'admin/unreviewed', element: <AdminUnreviewed /> },
-        { path: 'admin/flagged', element: <AdminFlagged /> },
-        { path: 'admin/addCourse', element: <AdminAddCourse /> },
-        { path: 'admin/review/:id', element: <ReviewPaper /> },
+        { path: 'upload', element: <Upload user={user} /> },
         { path: '*', element: <Navigate to="/404" replace /> },
         { path: '404', element: <NotFound /> }
       ]
     }
-  ]);
+  ];
+
+  if (user && user.role === 'admin') {
+    routes[0].children.push(
+      { path: 'admin/unreviewed', element: <AdminUnreviewed /> },
+      { path: 'admin/flagged', element: <AdminFlagged /> },
+      { path: 'admin/addCourse', element: <AdminAddCourse /> },
+      { path: 'admin/review/:id', element: <ReviewPaper /> }
+    );
+  }
+
+  if (user && user.role === 'superAdmin') {
+    routes[0].children.push({ path: 'admin/manage', element: <AdminManage /> });
+  }
+
+  return useRoutes(routes);
 }

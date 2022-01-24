@@ -47,12 +47,12 @@ DashboardNavbar.propTypes = {
 };
 
 export default function DashboardNavbar({ onOpenSidebar, updateUser }) {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
     updateUser(user);
-  }, [user]);
+  }, [user, updateUser]);
 
   const successResponseGoogle = (res) => {
     console.log(res);
@@ -63,6 +63,7 @@ export default function DashboardNavbar({ onOpenSidebar, updateUser }) {
       alert('Use your IIT Bhubaneswar email id.');
       return false;
     }
+    setIsLoading(true);
     axios
       .post(
         'http://localhost:5000/arpbackend-df561/us-central1/app/auth/login',
@@ -72,6 +73,7 @@ export default function DashboardNavbar({ onOpenSidebar, updateUser }) {
         }
       )
       .then((response) => {
+        console.log(response);
         setUser({ ...res.profileObj, role: response.data.user.role });
       })
       .catch((err) => console.log(err));
@@ -82,6 +84,24 @@ export default function DashboardNavbar({ onOpenSidebar, updateUser }) {
   const failureResponseGoogle = (res) => {
     setUser(null);
     setIsLoading(false);
+  };
+
+  const googleLogout = () => {
+    setUser(null);
+    setIsLoading(false);
+    axios
+      .post(
+        'http://localhost:5000/arpbackend-df561/us-central1/app/auth/logout',
+        {},
+        {
+          withCredentials: true
+        }
+      )
+      .then((response) => {
+        console.log(response);
+        console.log('Logged out successfully');
+      })
+      .catch((err) => console.log(err));
   };
 
   // const onAutoLoadFinished = (res) => {
@@ -102,7 +122,7 @@ export default function DashboardNavbar({ onOpenSidebar, updateUser }) {
               </Button>
             );
           }}
-          isSignedIn
+          // isSignedIn
           onSuccess={successResponseGoogle}
           onFailure={failureResponseGoogle}
           cookiePolicy="single_host_origin"
@@ -119,10 +139,7 @@ export default function DashboardNavbar({ onOpenSidebar, updateUser }) {
           load={() => {
             setIsLoading(true);
           }}
-          logout={() => {
-            setUser(null);
-            setIsLoading(false);
-          }}
+          logout={googleLogout}
         />
       </Stack>
     );
