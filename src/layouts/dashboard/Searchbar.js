@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 // iconify
 import { Icon } from '@iconify/react';
 import searchFill from '@iconify/icons-eva/search-fill';
@@ -64,9 +65,13 @@ const SearchResultsStyle = styled('div')(({ theme }) => ({
   }
 }));
 
+const searchArray = JSON.parse(localStorage.getItem('searchArray'));
+
 // ----------------------------------------------------------------------
 
 export default function Searchbar() {
+  const navigate = useNavigate();
+
   const [isOpen, setOpen] = useState(false);
 
   const [searchStr, setSearchStr] = useState('');
@@ -84,6 +89,15 @@ export default function Searchbar() {
     if (searchStr === '') setResults([]);
     else {
       // search
+      let query = searchStr;
+      const searchResult = [];
+      query = query.toLowerCase();
+      searchArray.forEach((item) => {
+        if (item.searchID.includes(query)) {
+          searchResult.push(item);
+        }
+      });
+      setResults(searchResult);
     }
   };
 

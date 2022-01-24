@@ -18,6 +18,8 @@ import {
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 // axios
 import axios from 'axios';
+// prop-types
+import PropTypes from 'prop-types';
 // components
 import Page from '../components/Page';
 import FilePreview from '../components/_dashboard/upload/FilePreview';
@@ -46,20 +48,17 @@ for (let i = new Date().getFullYear(); i > 2015; i -= 1) {
 }
 
 const searchArray = JSON.parse(localStorage.getItem('searchArray'));
-// const courseNameArray = [{ label: '', id: '' }];
-// const courseIdArray = [{ label: '', id: '' }];
-const newArray = [''];
-
-// const combinedAr
+const courseNameArray = [{ label: '', id: '' }];
+const courseIdArray = [{ label: '', id: '' }];
 
 searchArray.forEach((item) => {
-  // courseNameArray.push({ label: item.information.subjectName, id: item.information.subjectCode });
-  // courseIdArray.push({ label: item.information.subjectCode, id: item.information.subjectName });
-  newArray.push({
-    label: `${item.information.subjectCode} : ${item.information.subjectName}`,
-    information: item.information
-  });
+  courseNameArray.push({ label: item.information.subjectName, id: item.information.subjectCode });
+  courseIdArray.push({ label: item.information.subjectCode, id: item.information.subjectName });
 });
+
+Upload.propTypes = {
+  user: PropTypes.object
+};
 
 export default function Upload({ user }) {
   // console.log(courseData);
@@ -100,7 +99,7 @@ export default function Upload({ user }) {
   useEffect(() => {
     if (!user) {
       setServerResponse({
-        message: '            You not Logged. Please Log in with your institute email address.',
+        message: 'You not Logged. Please Log in with your institute email address.',
         severity: 'error'
       });
       setSnackbarOpen(true);
@@ -116,12 +115,21 @@ export default function Upload({ user }) {
     }
   }, []);
 
+  const enableButton =
+    data.course &&
+    data.id &&
+    data.sem &&
+    data.year &&
+    data.type &&
+    file &&
+    (['tutorial', 'others'].includes(data.type) ? data.desc : true);
+
   const postData = (URL, timestamp) => {
     const body = {
       // emailId: formData.get("email"),
-      subjectName: data.course.information.subjectName,
+      subjectName: data.course,
       semester: data.sem,
-      subjectCode: data.course.information.subjectCode,
+      subjectCode: data.id,
       type: data.type,
       year: data.year,
       downloadLink: URL,
@@ -294,9 +302,10 @@ export default function Upload({ user }) {
         <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
           <Box sx={{ display: 'flex', flexDirection: 'column' }} py={5}>
             <Box py={1}>
-              {/* <Autocomplete
+              <Autocomplete
                 value={data.course}
                 disablePortal
+                freeSolo
                 id="combo-box-demo"
                 options={courseNameArray}
                 sx={{ width: 300 }}
@@ -309,20 +318,9 @@ export default function Upload({ user }) {
                   curr.id = newValue ? newValue.id : '';
                   setData(curr);
                 }}
-              /> */}
-
-              <Autocomplete
-                // value={data.course}
-                disablePortal
-                id="combo-box-demo"
-                options={newArray}
-                sx={{ width: 300 }}
-                renderInput={(params) => (
-                  <TextField {...params} label="Course name" sx={{ width: 'min(80vw,500px)' }} />
-                )}
-                onChange={(event, newValue) => {
+                onInputChange={(event, newValue) => {
                   const curr = { ...data };
-                  curr.course = newValue;
+                  data.course = newValue;
                   setData(curr);
                 }}
               />
@@ -342,10 +340,11 @@ export default function Upload({ user }) {
               /> */}
             </Box>
 
-            {/* <Box py={1}>
+            <Box py={1}>
               <Autocomplete
                 value={data.id}
                 disablePortal
+                freeSolo
                 id="combo-box-demo"
                 options={courseIdArray}
                 sx={{ width: 300 }}
@@ -358,9 +357,14 @@ export default function Upload({ user }) {
                   curr.course = newValue ? newValue.id : '';
                   setData(curr);
                 }}
-              /> */}
+                onInputChange={(event, newValue) => {
+                  const curr = { ...data };
+                  data.id = newValue;
+                  setData(curr);
+                }}
+              />
 
-            {/* <TextField
+              {/* <TextField
                 label="Course ID"
                 value={data.id}
                 onChange={(e) => {
@@ -373,7 +377,7 @@ export default function Upload({ user }) {
                   setData(curr);
                 }}
               /> */}
-            {/* </Box> */}
+            </Box>
 
             <Box py={1} sx={{ display: 'flex' }}>
               <Typography sx={{ display: 'flex', alignItems: 'center', width: '160px' }}>
@@ -470,12 +474,27 @@ export default function Upload({ user }) {
         </Box>
 
         <Box sx={{ textAlign: 'right' }}>
-          <Button sx={{ margin: '20px 10px' }}>Cancel</Button>
+          <Button
+            sx={{ margin: '20px 10px' }}
+            onClick={() => {
+              setData({
+                course: '',
+                id: '',
+                type: 'endsem',
+                sem: 'autumn',
+                year: '2021',
+                desc: ''
+              });
+              setFile(null);
+            }}
+          >
+            Cancel
+          </Button>
           <Button
             variant="contained"
             sx={{ margin: '20px 10px' }}
             onClick={() => submitHandler()}
-            // disabled={!submitButtonEnable}
+            disabled={!enableButton}
           >
             Submit
           </Button>
