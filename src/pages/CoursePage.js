@@ -5,7 +5,17 @@ import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
 // axios
 import axios from 'axios';
 // material
-import { Stack, Button, Box, Container, Typography, Grid, CircularProgress } from '@mui/material';
+import {
+  Stack,
+  Button,
+  Box,
+  Container,
+  Typography,
+  Grid,
+  CircularProgress,
+  Alert,
+  Snackbar
+} from '@mui/material';
 // iconify
 import { Icon } from '@iconify/react';
 import plusFill from '@iconify/icons-eva/plus-fill';
@@ -44,6 +54,13 @@ export default function CoursePage(props) {
 
   const [flagDialogOpen, setFlagDialogOpen] = useState(false);
   const [flagFile, setFlagFile] = useState(null);
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [serverResponse, setServerResponse] = useState({ message: '', severity: 'info' });
+
+  const handleClose = () => {
+    setSnackbarOpen(false);
+  };
 
   const openDialog = () => {
     setFlagDialogOpen(true);
@@ -133,6 +150,20 @@ export default function CoursePage(props) {
   return (
     <Page title={` ${courseCode} | ARP`}>
       <Container>
+        <Snackbar
+          open={snackbarOpen}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'center'
+          }}
+          autoHideDuration={6000}
+          onClose={handleClose}
+        >
+          <Alert onClose={handleClose} severity={serverResponse.severity} sx={{ width: '100%' }}>
+            {serverResponse.message}
+          </Alert>
+        </Snackbar>
+
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
             {courseName}
@@ -181,7 +212,13 @@ export default function CoursePage(props) {
           </Box>
         )}
         {flagDialogOpen ? (
-          <FlagDialog open={flagDialogOpen} handleClose={closeDialog} file={flagFile} />
+          <FlagDialog
+            open={flagDialogOpen}
+            handleClose={closeDialog}
+            file={flagFile}
+            setServerResponse={setServerResponse}
+            setSnackbarOpen={setSnackbarOpen}
+          />
         ) : null}
       </Container>
     </Page>
