@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 // iconify
 import { Icon } from '@iconify/react';
 import searchFill from '@iconify/icons-eva/search-fill';
@@ -15,6 +15,8 @@ import {
   IconButton,
   Backdrop
 } from '@mui/material';
+
+import Scrollbar from '../../components/Scrollbar';
 
 // ----------------------------------------------------------------------
 
@@ -59,6 +61,7 @@ const SearchResultsStyle = styled('div')(({ theme }) => ({
   borderRadius: '20px',
   color: 'black',
   textAlign: 'center',
+  height: '40%',
   minHeight: APPBAR_DESKTOP,
   [theme.breakpoints.up('md')]: {
     padding: theme.spacing(0, 5)
@@ -70,8 +73,6 @@ const searchArray = JSON.parse(localStorage.getItem('searchArray'));
 // ----------------------------------------------------------------------
 
 export default function Searchbar() {
-  const navigate = useNavigate();
-
   const [isOpen, setOpen] = useState(false);
 
   const [searchStr, setSearchStr] = useState('');
@@ -156,9 +157,25 @@ export default function Searchbar() {
           </Slide>
 
           {/* Must be visible only when result count > 0 */}
-          <SearchResultsStyle onClick={(e) => e.stopPropagation()}>
-            <p>Search Results Here ...</p>
-          </SearchResultsStyle>
+          {results.length > 0 && (
+            <SearchResultsStyle onClick={(e) => e.stopPropagation()}>
+              <Scrollbar>
+                {results.map((result) => (
+                  <Button
+                    key={result.searchID}
+                    fullWidth
+                    onClick={() => {
+                      setOpen(false);
+                      setSearchStr('');
+                      // navigate();
+                    }}
+                    component={Link}
+                    to={`/course/${result.information.subjectCode}`}
+                  >{`${result.information.subjectCode} ${result.information.subjectName}`}</Button>
+                ))}
+              </Scrollbar>
+            </SearchResultsStyle>
+          )}
         </Backdrop>
       </div>
     </ClickAwayListener>

@@ -1,7 +1,7 @@
 // react
 import { useState, useEffect } from 'react';
 //
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
 // axios
 import axios from 'axios';
 // material
@@ -22,8 +22,9 @@ import { branches } from '../assets/data/branchData';
 
 // ----------------------------------------------------------------------
 
-export default function CoursePage() {
+export default function CoursePage(props) {
   const navigate = useNavigate();
+  const globalCourseCode = useParams().code;
 
   const [courseCode, setCourseCode] = useState('Course');
   const [courseName, setCourseName] = useState('');
@@ -31,13 +32,15 @@ export default function CoursePage() {
 
   const [loadMsg, setLoadMsg] = useState('Loading Course ...');
 
-  const [cards, setCards] = useState({
+  const initCardsState = {
     endsem: { array: [], title: 'End Semester' },
     midsem: { array: [], title: 'Mid Semester' },
     quiz: { array: [], title: 'Quiz' },
     tutorial: { array: [], title: 'Tutorials' },
     others: { array: [], title: 'Others' }
-  });
+  };
+
+  const [cards, setCards] = useState(initCardsState);
 
   const [flagDialogOpen, setFlagDialogOpen] = useState(false);
   const [flagFile, setFlagFile] = useState(null);
@@ -55,7 +58,7 @@ export default function CoursePage() {
   };
 
   const seperatePapers = () => {
-    const newCards = { ...cards };
+    const newCards = initCardsState;
     console.log(resources);
     resources.forEach((paper) => newCards[paper.type].array.push(paper));
     setCards(newCards);
@@ -112,16 +115,16 @@ export default function CoursePage() {
   };
 
   useEffect(() => {
-    const url = window.location.pathname;
-    const code = url.split('/')[2];
-
+    // const url = window.location.pathname;
+    setLoadMsg('Loading Course ...');
+    const code = globalCourseCode;
     const index = branches.findIndex(
       (el) => el.code && el.code.toLowerCase() === code.substring(0, 2).toLowerCase()
     );
 
     if (index < 0) navigate('/404', { replace: true });
     else checkCourse(branches[index].code, code.toUpperCase());
-  }, []);
+  }, [globalCourseCode]);
 
   useEffect(() => {
     if (resources.length > 0) seperatePapers();
