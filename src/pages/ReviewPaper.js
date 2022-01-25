@@ -103,7 +103,7 @@ export default function Upload() {
     const branch = data.id.substring(0, 2);
     const body = {
       subjectName: data.course,
-      subjectCode: data.id,
+      subjectCode: data.id.toUpperCase(),
       semester: data.sem,
       type: data.type,
       year: data.year,

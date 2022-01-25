@@ -129,7 +129,7 @@ export default function Upload({ user }) {
       // emailId: formData.get("email"),
       subjectName: data.course,
       semester: data.sem,
-      subjectCode: data.id,
+      subjectCode: data.id.toUpperCase(),
       type: data.type,
       year: data.year,
       downloadLink: URL,
