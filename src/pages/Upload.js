@@ -14,6 +14,9 @@ import {
   Snackbar,
   Alert
 } from '@mui/material';
+
+import { createFilterOptions } from '@mui/material/Autocomplete';
+
 // firebase
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 // axios
@@ -47,15 +50,6 @@ for (let i = new Date().getFullYear(); i > 2015; i -= 1) {
   YEAR_OPTIONS.push({ value: i.toString(), label: i.toString() });
 }
 
-const searchArray = JSON.parse(localStorage.getItem('searchArray'));
-const courseNameArray = [{ label: '', id: '' }];
-const courseIdArray = [{ label: '', id: '' }];
-
-searchArray.forEach((item) => {
-  courseNameArray.push({ label: item.information.subjectName, id: item.information.subjectCode });
-  courseIdArray.push({ label: item.information.subjectCode, id: item.information.subjectName });
-});
-
 Upload.propTypes = {
   user: PropTypes.object
 };
@@ -65,6 +59,8 @@ export default function Upload({ user }) {
   const navigate = useNavigate();
 
   const { state } = useLocation();
+
+  const filter = createFilterOptions();
 
   const [file, setFile] = useState(null);
 
@@ -77,8 +73,40 @@ export default function Upload({ user }) {
     desc: ''
   });
 
+  const searchArray = JSON.parse(localStorage.getItem('searchArray'));
+  // const courseNameArray = [{ label: '', id: '' }];
+  // const courseIdArray = [{ label: '', id: '' }];
+  const optionsArray = [];
+
+  searchArray.forEach((item) => {
+    // if (item.information.subjectCode === 'EE3L009') console.log(item);
+
+    if (item.information.subjectName !== 'Environmental Science Technology And Management') {
+      // courseNameArray.push({
+      //   label: item.information.subjectName,
+      //   id: item.information.subjectCode
+      // });
+      // courseIdArray.push({ label: item.information.subjectCode, id: item.information.subjectName });
+      optionsArray.push({
+        subjectName: item.information.subjectName,
+        subjectCode: item.information.subjectCode
+      });
+    }
+  });
+
+  // console.log(optionsArray);
+
   const handleFile = (inFile) => {
     if (!inFile) return;
+
+    if (inFile.type !== 'application/pdf') {
+      setServerResponse({
+        message: 'Please Upload a PDF file.',
+        severity: 'error'
+      });
+      setSnackbarOpen(true);
+      return;
+    }
 
     setFile(inFile);
   };
@@ -122,7 +150,7 @@ export default function Upload({ user }) {
     data.year &&
     data.type &&
     file &&
-    (['tutorial', 'others'].includes(data.type) ? data.desc : true);
+    (['tutorial', 'others', 'quiz'].includes(data.type) ? data.desc : true);
 
   const postData = (URL, timestamp) => {
     const body = {
@@ -165,6 +193,16 @@ export default function Upload({ user }) {
   };
 
   const submitHandler = async () => {
+    if (!user) {
+      setServerResponse({
+        message: 'You not Logged. Please Log in with your institute email address.',
+        severity: 'error'
+      });
+      setSnackbarOpen(true);
+
+      return;
+    }
+
     // DownloadURL
     let URL;
     // Create the file metadata
@@ -174,7 +212,7 @@ export default function Upload({ user }) {
 
     // Upload file and metadata to the object 'images/mountains.jpg'
     const timestamp = new Date().valueOf();
-    const fileName = `${data.id}:${timestamp}.pdf`;
+    const fileName = `${data.id}:${timestamp}.pdf/`;
 
     // Upload file and metadata to the object
     const storageRef = ref(storage, fileName);
@@ -303,26 +341,61 @@ export default function Upload({ user }) {
           <Box sx={{ display: 'flex', flexDirection: 'column' }} py={5}>
             <Box py={1}>
               <Autocomplete
+                onChange={(event, newValue) => {
+                  const curr = { ...data };
+                  if (typeof newValue === 'string') {
+                    curr.course = newValue;
+                  } else if (newValue && newValue.inputValue) {
+                    // Create a new value from the user input
+                    curr.course = newValue.inputValue;
+                  } else {
+                    curr.id = newValue.subjectCode;
+                    curr.course = newValue.subjectName;
+                  }
+                  setData(curr);
+                }}
+                filterOptions={(options, params) => {
+                  const filtered = filter(options, params);
+
+                  const { inputValue } = params;
+                  // Suggest the creation of a new value
+                  const isExisting = options.some((option) => inputValue === option.subjectName);
+                  if (inputValue !== '' && !isExisting) {
+                    filtered.push({
+                      inputValue,
+                      subjectName: `Add "${inputValue}"`
+                    });
+                  }
+
+                  return filtered;
+                }}
+                selectOnFocus
+                clearOnBlur
+                handleHomeEndKeys
+                options={optionsArray}
+                getOptionLabel={(option) => {
+                  // Value selected with enter, right from the input
+                  if (typeof option === 'string') {
+                    return option;
+                  }
+                  // Add "xxx" option created dynamically
+                  if (option.inputValue) {
+                    return option.inputValue;
+                  }
+                  // Regular option
+                  return option.subjectName;
+                }}
+                renderOption={(props, option) => <li {...props}>{option.subjectName}</li>}
                 value={data.course}
                 disablePortal
                 freeSolo
+                disableClearable
                 id="combo-box-demo"
-                options={courseNameArray}
+                // options={courseNameArray}
                 sx={{ width: 300 }}
                 renderInput={(params) => (
                   <TextField {...params} label="Course name" sx={{ width: 'min(80vw,500px)' }} />
                 )}
-                onChange={(event, newValue) => {
-                  const curr = { ...data };
-                  curr.course = newValue ? newValue.label : '';
-                  curr.id = newValue ? newValue.id : '';
-                  setData(curr);
-                }}
-                onInputChange={(event, newValue) => {
-                  const curr = { ...data };
-                  data.course = newValue;
-                  setData(curr);
-                }}
               />
 
               {/* <TextField
@@ -337,11 +410,82 @@ export default function Upload({ user }) {
                   curr.course = text.trimStart();
                   setData(curr);
                 }}
+                
+                
+                                // onChange={(event, newValue) => {
+                //   const curr = { ...data };
+                //   curr.course = newValue ? newValue.label : '';
+                //   curr.id = newValue ? newValue.id : '';
+                //   setData(curr);
+                // }}
+                // onInputChange={(event, newValue) => {
+                //   const curr = { ...data };
+                //   data.course = newValue;
+                //   setData(curr);
+                // }}
               /> */}
             </Box>
 
             <Box py={1}>
               <Autocomplete
+                onChange={(event, newValue) => {
+                  const curr = { ...data };
+
+                  if (typeof newValue === 'string') {
+                    curr.id = newValue;
+                  } else if (newValue && newValue.inputValue) {
+                    // Create a new value from the user input
+                    curr.id = newValue.inputValue;
+                  } else {
+                    curr.id = newValue.subjectCode;
+                    curr.course = newValue.subjectName;
+                  }
+                  setData(curr);
+                }}
+                filterOptions={(options, params) => {
+                  const filtered = filter(options, params);
+
+                  const { inputValue } = params;
+                  // Suggest the creation of a new value
+                  const isExisting = options.some((option) => inputValue === option.subjectCode);
+                  if (inputValue !== '' && !isExisting) {
+                    filtered.push({
+                      inputValue,
+                      subjectCode: `Add "${inputValue}"`
+                    });
+                  }
+
+                  return filtered;
+                }}
+                selectOnFocus
+                clearOnBlur
+                handleHomeEndKeys
+                options={optionsArray}
+                getOptionLabel={(option) => {
+                  // Value selected with enter, right from the input
+                  if (typeof option === 'string') {
+                    return option;
+                  }
+                  // Add "xxx" option created dynamically
+                  if (option.inputValue) {
+                    return option.inputValue;
+                  }
+                  // Regular option
+                  return option.subjectCode;
+                }}
+                renderOption={(props, option) => <li {...props}>{option.subjectCode}</li>}
+                value={data.id}
+                disablePortal
+                freeSolo
+                disableClearable
+                id="course-id-demo"
+                sx={{ width: 300 }}
+                renderInput={(params) => (
+                  <TextField {...params} label="Course name" sx={{ width: 'min(80vw,500px)' }} />
+                )}
+              />
+
+              {/* <Autocomplete
                 value={data.id}
                 disablePortal
                 freeSolo
@@ -362,7 +506,7 @@ export default function Upload({ user }) {
                   data.id = newValue;
                   setData(curr);
                 }}
-              />
+              /> */}
 
               {/* <TextField
                 label="Course ID"

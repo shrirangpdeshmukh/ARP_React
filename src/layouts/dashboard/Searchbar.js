@@ -68,11 +68,13 @@ const SearchResultsStyle = styled('div')(({ theme }) => ({
   }
 }));
 
-const searchArray = JSON.parse(localStorage.getItem('searchArray'));
+// console.log('searchArray', searchArray);
 
 // ----------------------------------------------------------------------
 
 export default function Searchbar() {
+  const searchArray = JSON.parse(localStorage.getItem('searchArray'));
+
   const [isOpen, setOpen] = useState(false);
 
   const [searchStr, setSearchStr] = useState('');

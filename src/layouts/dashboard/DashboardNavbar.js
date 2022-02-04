@@ -52,9 +52,10 @@ export default function DashboardNavbar({ onOpenSidebar, updateUser }) {
 
   useEffect(() => {
     updateUser(user);
-  }, [user, updateUser]);
+  }, [user]);
 
   const successResponseGoogle = (res) => {
+    setIsLoading(true);
     console.log(res);
     const emailUsed = res.profileObj.email;
     const index = emailUsed.indexOf('@');
@@ -63,7 +64,6 @@ export default function DashboardNavbar({ onOpenSidebar, updateUser }) {
       alert('Use your IIT Bhubaneswar email id.');
       return false;
     }
-    setIsLoading(true);
     axios
       .post(
         'http://localhost:5000/arpbackend-df561/us-central1/app/auth/login',
@@ -104,9 +104,9 @@ export default function DashboardNavbar({ onOpenSidebar, updateUser }) {
       .catch((err) => console.log(err));
   };
 
-  // const onAutoLoadFinished = (res) => {
-  //   setIsLoading(false);
-  // };
+  const onAutoLoadFinished = (res) => {
+    setIsLoading(false);
+  };
 
   const AuthBar = () => {
     if (!user)

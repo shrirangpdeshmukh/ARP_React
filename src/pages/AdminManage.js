@@ -30,7 +30,7 @@ import Page from '../components/Page';
 import Scrollbar from '../components/Scrollbar';
 import { AdditionDialog } from '../components/_dashboard/admin_administrator';
 // import { UserMoreMenu } from '../components/_dashboard/user';
-import USERLIST from '../_mocks_/user';
+// import USERLIST from '../_mocks_/user';
 
 // ----------------------------------------------------------------------
 
@@ -72,9 +72,9 @@ export default function Administrators() {
     setDialogOpen(false);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
-
   const filteredUsers = adminsList;
+
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - adminsList.length) : 0;
 
   const getAllAdmins = () => {
     axios
@@ -229,7 +229,7 @@ export default function Administrators() {
               <TablePagination
                 rowsPerPageOptions={[5, 10, 25]}
                 component="div"
-                count={USERLIST.length}
+                count={filteredUsers.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={handleChangePage}

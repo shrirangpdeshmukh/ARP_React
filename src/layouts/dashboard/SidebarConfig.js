@@ -30,12 +30,6 @@ const sidebarConfig = [
     role: ['superAdmin']
   },
   {
-    title: 'Add Course',
-    path: '/admin/addCourse',
-    icon: getIcon(plusCircleFilled),
-    role: ['admin', 'superAdmin']
-  },
-  {
     title: 'review resources',
     path: '/admin/unreviewed',
     icon: getIcon(baselineRateReview),
