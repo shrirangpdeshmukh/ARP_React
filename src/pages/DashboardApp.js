@@ -1,5 +1,6 @@
 // material
 import { Box, Grid, Container, Typography } from '@mui/material';
+import PropTypes from 'prop-types';
 // components
 import Page from '../components/Page';
 import { AppCard } from '../components/_dashboard/app';
@@ -9,12 +10,25 @@ import { branches } from '../assets/data/branchData';
 
 // ----------------------------------------------------------------------
 
-export default function DashboardApp() {
+DashboardApp.propTypes = {
+  user: PropTypes.object
+};
+
+function Capitalize(name) {
+  return name.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+}
+
+export default function DashboardApp({ user }) {
   return (
     <Page title="Main Page | ARP">
       <Container maxWidth="xl">
         <Box sx={{ pb: 5 }}>
-          <Typography variant="h4">Hi, Welcome back</Typography>
+          <Typography variant="h4">
+            Hi {user ? Capitalize(user.name) : ''}{' '}
+            <span role="img" style={{ fontSize: '2rem' }} aria-label="hi">
+              👋
+            </span>
+          </Typography>
         </Box>
         <Grid container spacing={3}>
           {branches.map((branch) => {

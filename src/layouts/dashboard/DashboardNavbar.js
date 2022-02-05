@@ -43,12 +43,13 @@ const ToolbarStyle = styled(Toolbar)(({ theme }) => ({
 
 DashboardNavbar.propTypes = {
   onOpenSidebar: PropTypes.func,
-  updateUser: PropTypes.func
+  updateUser: PropTypes.func,
+  Cookies: PropTypes.object
 };
 
-export default function DashboardNavbar({ onOpenSidebar, updateUser }) {
+export default function DashboardNavbar({ onOpenSidebar, updateUser, Cookies }) {
   const [isLoading, setIsLoading] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(Cookies.cookies.user ? JSON.parse(Cookies.cookies.user) : null);
 
   useEffect(() => {
     updateUser(user);
@@ -75,6 +76,18 @@ export default function DashboardNavbar({ onOpenSidebar, updateUser }) {
       .then((response) => {
         console.log(response);
         setUser({ ...res.profileObj, role: response.data.user.role });
+        Cookies.set(
+          'user',
+          { ...res.profileObj, role: response.data.user.role },
+          {
+            path: '/',
+            expires: new Date(response.data.expireAt)
+          }
+        );
+        Cookies.set('isLoggedIn', true, {
+          path: '/',
+          expires: new Date(response.data.expireAt)
+        });
       })
       .catch((err) => console.log(err));
 

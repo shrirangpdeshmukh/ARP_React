@@ -22,14 +22,14 @@ Router.propTypes = {
   updateUser: PropTypes.func
 };
 
-export default function Router({ user, updateUser }) {
+export default function Router({ user, updateUser, Cookies }) {
   const routes = [
     {
       path: '/',
-      element: <DashboardLayout user={user} updateUser={updateUser} />,
+      element: <DashboardLayout user={user} updateUser={updateUser} Cookies={Cookies} />,
       children: [
         { element: <Navigate to="/app" replace /> },
-        { path: 'app', element: <DashboardApp /> },
+        { path: 'app', element: <DashboardApp user={user} /> },
         { path: 'branch/:name', element: <BranchPage /> },
         { path: 'course/:code', element: <CoursePage /> },
         { path: 'upload', element: <Upload user={user} /> },

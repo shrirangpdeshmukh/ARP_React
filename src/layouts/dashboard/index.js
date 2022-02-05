@@ -45,10 +45,11 @@ const PaddedStyle = styled('div')(({ theme }) => ({
 
 DashboardLayout.propTypes = {
   user: PropTypes.object,
-  updateUser: PropTypes.func
+  updateUser: PropTypes.func,
+  Cookies: PropTypes.object
 };
 
-export default function DashboardLayout({ user, updateUser }) {
+export default function DashboardLayout({ user, updateUser, Cookies }) {
   const [open, setOpen] = useState(false);
   const compRef = useRef(null);
 
@@ -60,7 +61,11 @@ export default function DashboardLayout({ user, updateUser }) {
 
   return (
     <RootStyle>
-      <DashboardNavbar onOpenSidebar={() => setOpen(true)} updateUser={updateUser} />
+      <DashboardNavbar
+        onOpenSidebar={() => setOpen(true)}
+        updateUser={updateUser}
+        Cookies={Cookies}
+      />
       <DashboardSidebar isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} user={user} />
       <MainStyle>
         <Scrollbar>
