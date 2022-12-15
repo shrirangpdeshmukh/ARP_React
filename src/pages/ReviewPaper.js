@@ -2,8 +2,6 @@
 import { useState, useEffect } from 'react';
 //
 import { useLocation, useNavigate } from 'react-router-dom';
-// axios
-import axios from 'axios';
 // material
 import {
   Button,
@@ -24,6 +22,7 @@ import refreshFill from '@iconify/icons-eva/refresh-fill';
 import Page from '../components/Page';
 import FilePreview from '../components/_dashboard/upload/FilePreview';
 import ConfirmationDialog from '../components/_dashboard/review/ConfirmationDialog';
+import { acceptResource, deleteResourcePaper } from '../API/studyResources';
 
 // ---------------------------------------------------------
 
@@ -110,17 +109,14 @@ export default function Upload() {
       description: data.desc
     };
     console.log(body);
-
-    axios
-      .put(
-        `http://localhost:5000/arpbackend-df561/us-central1/app/admin/review/studyResources/branches/${branch}/subjects/${data.id}/resources/${data.resourceId}`,
-        body,
-        { withCredentials: true }
-      )
+    acceptResource(branch, data.resourceId, body)
       .then((response) => {
         console.log(response);
         setServerResponse({ message: 'File Accepted Successfully', severity: 'success' });
         setSnackbarOpen(true);
+        setTimeout(() => {
+          navigate('/admin/unreviewed');
+        }, 5000);
       })
       .catch((error) => {
         console.error(error);
@@ -133,15 +129,10 @@ export default function Upload() {
     console.log('Called Delete File');
 
     const branch = data.id.substring(0, 2);
-
-    axios
-      .delete(
-        `http://localhost:5000/arpbackend-df561/us-central1/app/studyResources/branches/${branch}/subjects/${data.id}/resources/${data.resourceId}`,
-        { withCredentials: true }
-      )
+    deleteResourcePaper(branch, data.id, data.resourceId)
       .then((response) => {
         console.log(response);
-        if (response.status === 204) {
+        if (response) {
           setServerResponse({ message: 'File Deleted Successfully', severity: 'success' });
           setSnackbarOpen(true);
           setTimeout(() => {
@@ -151,7 +142,7 @@ export default function Upload() {
       })
       .catch((err) => {
         console.log(err);
-        setServerResponse({ message: err.response.data.error, severity: 'error' });
+        setServerResponse({ message: err.message, severity: 'error' });
         setSnackbarOpen(true);
       });
   };

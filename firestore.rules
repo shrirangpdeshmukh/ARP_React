@@ -1,0 +1,45 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+  
+   function isAuth() {
+  		 return request.auth != null && request.auth.uid!= null;
+   }
+   
+  function isAdmin() {
+   			return isAuth() && exists(/databases/$(database)/documents/admins/$(request.auth.token.email));
+   }
+   
+   function isSuperAdmin() {
+   			return isAuth() && request.auth.token.email== "secyprogsoc.sg@iitbbs.ac.in";
+   }
+   
+   match /branches/{branch} {
+   		allow read;
+      
+      allow create, update: if isAuth();
+      
+      allow delete: if isAdmin() || isSuperAdmin();
+   }
+  
+   match /branches/{branch}/{subjects}/{subject} {
+      allow read;
+      
+      allow create: if isAuth();
+      
+      allow update, delete: if isAdmin() || isSuperAdmin();
+    }
+    
+    match /check/list {
+    	allow read;
+      
+      allow write: if isAdmin() || isSuperAdmin();
+    }
+    
+    match /admins/{admin} {
+    	allow read : if isAuth();
+      allow write: if isSuperAdmin();
+    }
+    
+  }
+}

@@ -77,12 +77,3 @@ export const branches = [
   { show: false, title: 'CY', subtitle: 'Chemistry', code: 'CY' },
   { show: false, title: 'ID', subtitle: 'IDT Courses', code: 'ID' }
 ];
-
-// const options = [];
-// branches.forEach((branch) => {
-//   options.push(branch.title.toLowerCase());
-// });
-
-// export const branchString = options.join('|');
-
-// console.log(branchString);

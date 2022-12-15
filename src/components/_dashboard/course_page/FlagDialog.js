@@ -16,7 +16,7 @@ import {
   Select,
   InputLabel
 } from '@mui/material';
-import axios from 'axios';
+import { flagAResource } from '../../../API/studyResources';
 
 // ----------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ const FLAG_OPTIONS = [
   { value: 'irrelevant', label: 'The file is irrelevant' },
   { value: 'duplicate', label: 'The file is duplicated' },
   { value: 'unclear', label: 'The file is not clear' },
-  { value: 'explict', label: 'The file is explict' }
+  { value: 'explict', label: 'The file is explicit' }
 ];
 
 export default function FlagDialog({
@@ -48,22 +48,17 @@ export default function FlagDialog({
     const branch = file.subjectCode.substring(0, 2);
 
     console.log('Called Flag Resource');
-    axios
-      .put(
-        `http://localhost:5000/arpbackend-df561/us-central1/app/studyResources/branches/${branch}/subjects/${file.subjectCode}/resources/${file.resourceId}`,
-        { flagReason: reason },
-        { withCredentials: true }
-      )
+    flagAResource(branch, file.subjectCode, file.resourceId, reason)
       .then((response) => {
         console.log(response);
-        if (response.status === 204) {
+        if (response.status) {
           setServerResponse({ message: 'Flagged Successfully', severity: 'success' });
           setSnackbarOpen(true);
         }
       })
       .catch((err) => {
         console.log(err);
-        setServerResponse({ message: err.response.data.error, severity: 'error' });
+        setServerResponse({ message: err.message, severity: 'error' });
         setSnackbarOpen(true);
       });
   };

@@ -23,14 +23,12 @@ import {
   Snackbar,
   Alert
 } from '@mui/material';
-import axios from 'axios';
 
 // components
 import Page from '../components/Page';
 import Scrollbar from '../components/Scrollbar';
 import { AdditionDialog } from '../components/_dashboard/admin_administrator';
-// import { UserMoreMenu } from '../components/_dashboard/user';
-// import USERLIST from '../_mocks_/user';
+import { getAdmins, checkOrg, addAdminToDB, removeAdminFromDB } from '../API/admins';
 
 // ----------------------------------------------------------------------
 
@@ -77,12 +75,9 @@ export default function Administrators() {
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - adminsList.length) : 0;
 
   const getAllAdmins = () => {
-    axios
-      .get('http://localhost:5000/arpbackend-df561/us-central1/app/super-admin/admin', {
-        withCredentials: true
-      })
+    getAdmins()
       .then((response) => {
-        setAdminsList(response.data);
+        setAdminsList(response);
       })
       .catch((error) => {
         console.error(error);
@@ -91,14 +86,10 @@ export default function Administrators() {
   };
 
   const removeAdmin = (email) => {
-    axios
-      .delete(
-        `http://localhost:5000/arpbackend-df561/us-central1/app/super-admin/admin?email=${email}`,
-        { withCredentials: true }
-      )
+    removeAdminFromDB(email)
       .then((response) => {
         console.log(response);
-        if (response.status === 204) {
+        if (response) {
           setServerResponse({ message: 'Admin Removed Successfully', severity: 'success' });
           setSnackbarOpen(true);
           const newAdmins = [...adminsList];
@@ -109,21 +100,21 @@ export default function Administrators() {
       })
       .catch((err) => {
         console.log(err);
-        setServerResponse({ message: err.response.data.error, severity: 'error' });
+        setServerResponse({ message: err.message, severity: 'error' });
         setSnackbarOpen(true);
       });
   };
 
   const addAdmin = (name, email) => {
-    axios
-      .post(
-        'http://localhost:5000/arpbackend-df561/us-central1/app/super-admin/admin',
-        { name, email },
-        { withCredentials: true }
-      )
+    if (!checkOrg(email)) {
+      setServerResponse({ message: 'Use institute Email-ID', severity: 'error' });
+      setSnackbarOpen(true);
+      return;
+    }
+    addAdminToDB(name, email)
       .then((response) => {
         console.log(response);
-        if (response.status === 201) {
+        if (response) {
           setServerResponse({ message: 'Admin Added Successfully', severity: 'success' });
           setSnackbarOpen(true);
           const newAdmins = [...adminsList];
@@ -133,7 +124,7 @@ export default function Administrators() {
       })
       .catch((err) => {
         console.log(err);
-        setServerResponse({ message: err.response.data.error, severity: 'error' });
+        setServerResponse({ message: err.message, severity: 'error' });
         setSnackbarOpen(true);
       });
   };

@@ -2,8 +2,6 @@
 import { useState, useEffect } from 'react';
 //
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
-// axios
-import axios from 'axios';
 // material
 import {
   Stack,
@@ -27,7 +25,7 @@ import { TypeCard, FlagDialog } from '../components/_dashboard/course_page';
 
 import { branches } from '../assets/data/branchData';
 // import courseData from '../assets/data/courseData.json';
-
+import { getResourcesBySubjectCode } from '../API/studyResources';
 // ----------------------------------------------------------------------
 
 // ----------------------------------------------------------------------
@@ -84,23 +82,6 @@ export default function CoursePage(props) {
   };
 
   const checkCourse = (branch, id) => {
-    // axios
-    //   .get(`https://arpbackend-df561.firebaseapp.com/studyResources/branches/${branch}`)
-    //   .then((res) => {
-    //     const index = res.data.findIndex((el) => el.subjectCode === id.toUpperCase());
-    //     if (index < 0) navigate('/404', { replace: 'true' });
-    //     else {
-    //       setCourseName(res.data[index].subjectName);
-    //       setCourseCode(res.data[index].subjectCode);
-    //       getResources(branch, id);
-
-    //       setLoadMsg('Fetching Resources ...');
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
-
     const courseData = JSON.parse(localStorage.getItem('branchSubjectList'));
 
     let index = -1;
@@ -118,17 +99,14 @@ export default function CoursePage(props) {
     }
   };
 
-  const getResources = (branch, id) => {
-    axios
-      .get(
-        `https://arpbackend-df561.firebaseapp.com/studyResources/branches/${branch}/subjects/${id}`
-      )
-      .then((res) => {
-        setResources(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  const getResources = async (branch, id) => {
+    try {
+      const data = await getResourcesBySubjectCode(branch, id);
+      setResources(data);
+    } catch (err) {
+      console.log(err);
+      window.alert(err.message);
+    }
   };
 
   useEffect(() => {

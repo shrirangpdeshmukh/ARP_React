@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react';
 //
 import { filter } from 'lodash';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-// axios
-import axios from 'axios';
 
 // material
 import { styled } from '@mui/material/styles';
@@ -122,22 +120,7 @@ export default function BranchPage() {
   }, [courses]);
 
   const getCourses = (branch) => {
-    // axios
-    //   .get(`https://arpbackend-df561.firebaseapp.com/studyResources/branches/${course}`)
-    //   .then((res) => {
-    //     console.log(res.data);
-
-    //     if (res.data.length > 0) setCourses(res.data);
-    //     else setFetched(true);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //     setFetched(true);
-    //   });
-
     const courseData = JSON.parse(localStorage.getItem('branchSubjectList'));
-
-    console.log(courseData);
 
     const index = courseData.findIndex((el) => el.branchName === branch);
     if (index >= 0) setCourses(courseData[index].data);

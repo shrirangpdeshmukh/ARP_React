@@ -1,8 +1,6 @@
 import { sentenceCase } from 'change-case';
 import { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-// axios
-import axios from 'axios';
 
 // material
 import {
@@ -28,8 +26,11 @@ import Page from '../components/Page';
 import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
 import { OptionsMenu } from '../components/_dashboard/admin_flagged';
-//
-// import USERLIST from '../_mocks_/user';
+import {
+  getAllFlaggedResources,
+  clearFlagsOfResource,
+  deleteResourcePaper
+} from '../API/studyResources';
 
 // ----------------------------------------------------------------------
 
@@ -95,18 +96,15 @@ export default function AdminFlagged() {
   const filteredUsers = resources;
 
   const getFlaggedResources = () => {
-    axios
-      .get('http://localhost:5000/arpbackend-df561/us-central1/app/admin/flagged', {
-        withCredentials: true
-      })
+    getAllFlaggedResources()
       .then((response) => {
         console.log(response);
-        setResources(response.data);
+        setResources(response);
         setLoadMsg(null);
       })
       .catch((err) => {
         console.log(err);
-        window.alert('Something went wrong');
+        window.alert(err.message);
       });
   };
 
@@ -114,15 +112,10 @@ export default function AdminFlagged() {
     const branch = subjectCode.substring(0, 2);
 
     console.log('Called Clear Flags');
-    axios
-      .put(
-        `http://localhost:5000/arpbackend-df561/us-central1/app/admin/flag-clear/studyResources/branches/${branch}/subjects/${subjectCode}/resources/${resourceId}`,
-        {},
-        { withCredentials: true }
-      )
+    clearFlagsOfResource(branch, subjectCode, resourceId)
       .then((response) => {
         console.log(response);
-        if (response.status === 204) {
+        if (response) {
           setServerResponse({ message: 'Flag Cleared Successfully', severity: 'success' });
           setSnackbarOpen(true);
           const newResoures = [...resources];
@@ -133,7 +126,7 @@ export default function AdminFlagged() {
       })
       .catch((err) => {
         console.log(err);
-        setServerResponse({ message: err.response.data.error, severity: 'error' });
+        setServerResponse({ message: err.message, severity: 'error' });
         setSnackbarOpen(true);
       });
   };
@@ -143,11 +136,7 @@ export default function AdminFlagged() {
 
     console.log('Called Delete File');
 
-    axios
-      .delete(
-        `http://localhost:5000/arpbackend-df561/us-central1/app/studyResources/branches/${branch}/subjects/${subjectCode}/resources/${resourceId}`,
-        { withCredentials: true }
-      )
+    deleteResourcePaper(branch, subjectCode, resourceId)
       .then((response) => {
         console.log(response);
         if (response.status === 204) {
@@ -161,7 +150,7 @@ export default function AdminFlagged() {
       })
       .catch((err) => {
         console.log(err);
-        setServerResponse({ message: err.response.data.error, severity: 'error' });
+        setServerResponse({ message: err.message, severity: 'error' });
         setSnackbarOpen(true);
       });
   };

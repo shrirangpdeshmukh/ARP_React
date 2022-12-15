@@ -1,10 +1,8 @@
 import PropTypes from 'prop-types';
 import { useRef, useState } from 'react';
 // material
-
 import { Button, Box, Divider, Typography, Avatar, IconButton } from '@mui/material';
-// google-logout
-import { GoogleLogout } from 'react-google-login';
+
 // components
 import MenuPopover from '../../components/MenuPopover';
 //
@@ -73,25 +71,11 @@ export default function AccountPopover({ user, load, logout }) {
 
         <Divider sx={{ my: 1 }} />
 
-        <GoogleLogout
-          clientId="658977310896-knrl3gka66fldh83dao2rhgbblmd4un9.apps.googleusercontent.com"
-          onLogoutSuccess={logout}
-          render={(renderProps) => (
-            <Box sx={{ p: 2, pt: 1.5 }}>
-              <Button
-                fullWidth
-                color="inherit"
-                variant="outlined"
-                onClick={() => {
-                  load();
-                  renderProps.onClick();
-                }}
-              >
-                Logout
-              </Button>
-            </Box>
-          )}
-        />
+        <Box sx={{ p: 2, pt: 1.5 }}>
+          <Button fullWidth color="inherit" variant="outlined" onClick={logout}>
+            Logout
+          </Button>
+        </Box>
       </MenuPopover>
     </>
   );

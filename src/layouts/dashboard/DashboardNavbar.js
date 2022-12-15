@@ -6,14 +6,12 @@ import { useState, useEffect } from 'react';
 // material
 import { alpha, styled } from '@mui/material/styles';
 import { Box, Button, Stack, AppBar, Toolbar, IconButton, CircularProgress } from '@mui/material';
-// google-login
-import GoogleLogin from 'react-google-login';
-import axios from 'axios';
 // components
 import { MHidden } from '../../components/@material-extend';
 //
 import Searchbar from './Searchbar';
 import AccountPopover from './AccountPopover';
+import { googleLogin, googleLogout, getUserRole } from '../../API/auth';
 
 // ----------------------------------------------------------------------
 
@@ -55,94 +53,60 @@ export default function DashboardNavbar({ onOpenSidebar, updateUser, Cookies }) 
     updateUser(user);
   }, [user]);
 
-  const successResponseGoogle = (res) => {
-    setIsLoading(true);
-    console.log(res);
-    const emailUsed = res.profileObj.email;
-    const index = emailUsed.indexOf('@');
-    const domain = emailUsed.substr(index);
-    if (domain !== '@iitbbs.ac.in') {
-      alert('Use your IIT Bhubaneswar email id.');
-      return false;
+  const login = async () => {
+    try {
+      setIsLoading(true);
+      const res = await googleLogin();
+      if (!res) {
+        throw new Error("Couldn't login");
+      }
+      console.log({ res });
+      const resUser = res.user;
+
+      console.log({ resUser });
+      const userRole = await getUserRole(resUser.email);
+
+      const userObject = {
+        email: resUser.email,
+        name: resUser.displayName,
+        imageUrl: resUser.photoURL,
+        role: userRole
+      };
+
+      const expirationTime = new Date(resUser.stsTokenManager.expirationTime);
+      console.log({ userObject, expirationTime });
+      setUser(userObject);
+      Cookies.set('user', userObject, {
+        path: '/',
+        expires: expirationTime
+      });
+      Cookies.set('isLoggedIn', true, {
+        path: '/',
+        expires: expirationTime
+      });
+
+      setIsLoading(false);
+    } catch (err) {
+      console.log(err);
+      window.alert('Something went wrong with the Login!');
+      setIsLoading(false);
     }
-    axios
-      .post(
-        'http://localhost:5000/arpbackend-df561/us-central1/app/auth/login',
-        { tokenId: res.tokenId },
-        {
-          withCredentials: true
-        }
-      )
-      .then((response) => {
-        console.log(response);
-        setUser({ ...res.profileObj, role: response.data.user.role });
-        Cookies.set(
-          'user',
-          { ...res.profileObj, role: response.data.user.role },
-          {
-            path: '/',
-            expires: new Date(response.data.expireAt)
-          }
-        );
-        Cookies.set('isLoggedIn', true, {
-          path: '/',
-          expires: new Date(response.data.expireAt)
-        });
-      })
-      .catch((err) => console.log(err));
-
-    setIsLoading(false);
   };
 
-  const failureResponseGoogle = (res) => {
+  const logout = async () => {
+    await googleLogout();
     setUser(null);
-    setIsLoading(false);
-  };
-
-  const googleLogout = () => {
-    setUser(null);
-    setIsLoading(false);
-    axios
-      .post(
-        'http://localhost:5000/arpbackend-df561/us-central1/app/auth/logout',
-        {},
-        {
-          withCredentials: true
-        }
-      )
-      .then((response) => {
-        console.log(response);
-        console.log('Logged out successfully');
-      })
-      .catch((err) => console.log(err));
-  };
-
-  const onAutoLoadFinished = (res) => {
     setIsLoading(false);
   };
 
   const AuthBar = () => {
-    if (!user)
+    if (!user && isLoading) return <CircularProgress />;
+
+    if (!user && !isLoading)
       return (
-        <GoogleLogin
-          className="google-login"
-          clientId="673970648113-sle0qvep0tjdcnfroiqeoetgrbcn8k88.apps.googleusercontent.com"
-          render={(renderProps) => {
-            if (isLoading) return <CircularProgress />;
-            return (
-              <Button onClick={renderProps.onClick} variant="outlined">
-                Log in
-              </Button>
-            );
-          }}
-          // isSignedIn
-          onSuccess={successResponseGoogle}
-          onFailure={failureResponseGoogle}
-          cookiePolicy="single_host_origin"
-          icon={false}
-          padding={100}
-          // onAutoLoadFinished={onAutoLoadFinished}
-        />
+        <Button onClick={login} variant="outlined">
+          Log in
+        </Button>
       );
 
     return (
@@ -152,7 +116,7 @@ export default function DashboardNavbar({ onOpenSidebar, updateUser, Cookies }) 
           load={() => {
             setIsLoading(true);
           }}
-          logout={googleLogout}
+          logout={logout}
         />
       </Stack>
     );

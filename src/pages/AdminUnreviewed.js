@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import { sentenceCase } from 'change-case';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-//
-import axios from 'axios';
 // material
 import {
   Card,
@@ -26,9 +24,8 @@ import { visuallyHidden } from '@mui/utils';
 import Page from '../components/Page';
 import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
+import { getAllUnreviewedResources } from '../API/studyResources';
 import { OptionsMenu } from '../components/_dashboard/admin_unreviewed';
-//
-// import USERLIST from '../_mocks_/user';
 
 // ----------------------------------------------------------------------
 
@@ -114,11 +111,10 @@ export default function AdminUnreviewed() {
   const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy));
 
   const getUnreviewedResources = () => {
-    axios
-      .get(`https://arpbackend-df561.firebaseapp.com/admin/unreviewed`)
+    getAllUnreviewedResources()
       .then((res) => {
-        console.log(res.data);
-        setResources(res.data);
+        console.log(res);
+        setResources(res);
         setLoadMsg(null);
       })
       .catch((err) => {

@@ -95,7 +95,7 @@ export default function AddCourse() {
         })
         .catch((err) => {
           console.log(err);
-          setServerResponse({ message: err.response.data.error, severity: 'error' });
+          setServerResponse({ message: err.message, severity: 'error' });
           setSnackbarOpen(true);
         });
 

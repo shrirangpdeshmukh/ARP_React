@@ -12,15 +12,14 @@ import {
   Box,
   Autocomplete,
   Snackbar,
-  Alert
+  Alert,
+  LinearProgress
 } from '@mui/material';
 
 import { createFilterOptions } from '@mui/material/Autocomplete';
 
 // firebase
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-// axios
-import axios from 'axios';
 // prop-types
 import PropTypes from 'prop-types';
 // components
@@ -28,6 +27,7 @@ import Page from '../components/Page';
 import FilePreview from '../components/_dashboard/upload/FilePreview';
 // firebase
 import { storage } from '../firebaseConfig';
+import { uploadStudyResource } from '../API/studyResources';
 
 // ---------------------------------------------------------
 
@@ -69,24 +69,18 @@ export default function Upload({ user }) {
     id: '',
     type: 'endsem',
     sem: 'autumn',
-    year: '2021',
+    year: '2022',
     desc: ''
   });
 
+  const [isUploading, setUploading] = useState(false);
+
   const searchArray = JSON.parse(localStorage.getItem('searchArray'));
-  // const courseNameArray = [{ label: '', id: '' }];
-  // const courseIdArray = [{ label: '', id: '' }];
+
   const optionsArray = [];
 
   searchArray.forEach((item) => {
-    // if (item.information.subjectCode === 'EE3L009') console.log(item);
-
     if (item.information.subjectName !== 'Environmental Science Technology And Management') {
-      // courseNameArray.push({
-      //   label: item.information.subjectName,
-      //   id: item.information.subjectCode
-      // });
-      // courseIdArray.push({ label: item.information.subjectCode, id: item.information.subjectName });
       optionsArray.push({
         subjectName: item.information.subjectName,
         subjectCode: item.information.subjectCode
@@ -153,8 +147,11 @@ export default function Upload({ user }) {
     (['tutorial', 'others', 'quiz'].includes(data.type) ? data.desc : true);
 
   const postData = (URL, timestamp) => {
+    console.log(URL);
+    if (!URL) return;
+
     const body = {
-      // emailId: formData.get("email"),
+      emailId: user.email,
       subjectName: data.course,
       semester: data.sem,
       subjectCode: data.id.toUpperCase(),
@@ -165,30 +162,33 @@ export default function Upload({ user }) {
       description: data.desc
     };
 
-    console.log(URL);
-    if (!URL) return;
-
     const branch = body.subjectCode.substring(0, 2);
-    axios
-      .post(
-        `http://localhost:5000/arpbackend-df561/us-central1/app/studyResources/branches/${branch}/subjects/${body.subjectCode}`,
-        body,
-        { withCredentials: true }
-      )
+
+    uploadStudyResource(body, branch)
       .then((res) => {
         console.log(res);
-        if (res.status === 201) {
+        if (res) {
           setServerResponse({ message: 'File Uploaded Successfully', severity: 'success' });
           setSnackbarOpen(true);
-          setTimeout(() => {
-            navigate('/');
-          }, 5000);
+          setData({
+            course: '',
+            id: '',
+            type: 'endsem',
+            sem: 'autumn',
+            year: '2021',
+            desc: ''
+          });
+          setFile(null);
+          setUploading(false);
         }
       })
       .catch((err) => {
         console.error(err);
-        setServerResponse({ message: err.response.data.error, severity: 'error' });
+        console.log(err.message);
+
+        setServerResponse({ message: err.message, severity: 'error' });
         setSnackbarOpen(true);
+        setUploading(false);
       });
   };
 
@@ -199,7 +199,15 @@ export default function Upload({ user }) {
         severity: 'error'
       });
       setSnackbarOpen(true);
+      return;
+    }
 
+    if (!data) {
+      setServerResponse({
+        message: 'Something went while selecting the data!',
+        severity: 'error'
+      });
+      setSnackbarOpen(true);
       return;
     }
 
@@ -286,7 +294,7 @@ export default function Upload({ user }) {
           </Alert>
         </Snackbar>
 
-        <label htmlFor="file-resource" sx={{ cursor: 'pointer' }}>
+        <label htmlFor="file-resource">
           <Box
             sx={{ borderRadius: 2, bgcolor: 'grey.200', py: 5 }}
             onDrop={(event) => {
@@ -334,6 +342,10 @@ export default function Upload({ user }) {
           hidden
           onChange={(event) => {
             handleFile(event.target.files[0]);
+            window.scrollTo({
+              bottom: 0,
+              behavior: 'smooth'
+            });
           }}
         />
 
@@ -397,33 +409,6 @@ export default function Upload({ user }) {
                   <TextField {...params} label="Course name" sx={{ width: 'min(80vw,500px)' }} />
                 )}
               />
-
-              {/* <TextField
-                label="Course name"
-                sx={{ width: 'min(80vw,500px)' }}
-                value={data.course}
-                onChange={(e) => {
-                  let text = e.target.value;
-                  text = text.replace(/\s\s+/g, ' ');
-                  text = text.replace(/[^\w\s]/gi, '');
-                  const curr = { ...data };
-                  curr.course = text.trimStart();
-                  setData(curr);
-                }}
-                
-                
-                                // onChange={(event, newValue) => {
-                //   const curr = { ...data };
-                //   curr.course = newValue ? newValue.label : '';
-                //   curr.id = newValue ? newValue.id : '';
-                //   setData(curr);
-                // }}
-                // onInputChange={(event, newValue) => {
-                //   const curr = { ...data };
-                //   data.course = newValue;
-                //   setData(curr);
-                // }}
-              /> */}
             </Box>
 
             <Box py={1}>
@@ -484,43 +469,6 @@ export default function Upload({ user }) {
                   <TextField {...params} label="Course name" sx={{ width: 'min(80vw,500px)' }} />
                 )}
               />
-
-              {/* <Autocomplete
-                value={data.id}
-                disablePortal
-                freeSolo
-                id="combo-box-demo"
-                options={courseIdArray}
-                sx={{ width: 300 }}
-                renderInput={(params) => (
-                  <TextField {...params} label="Course ID" sx={{ width: 'min(80vw,500px)' }} />
-                )}
-                onChange={(event, newValue) => {
-                  const curr = { ...data };
-                  curr.id = newValue ? newValue.label : '';
-                  curr.course = newValue ? newValue.id : '';
-                  setData(curr);
-                }}
-                onInputChange={(event, newValue) => {
-                  const curr = { ...data };
-                  data.id = newValue;
-                  setData(curr);
-                }}
-              /> */}
-
-              {/* <TextField
-                label="Course ID"
-                value={data.id}
-                onChange={(e) => {
-                  let text = e.target.value;
-                  text = text.replace(/\s/g, '');
-                  text = text.replace(/[^\w]/gi, '');
-                  text = text.substring(0, 7);
-                  const curr = { ...data };
-                  curr.id = text.toUpperCase();
-                  setData(curr);
-                }}
-              /> */}
             </Box>
 
             <Box py={1} sx={{ display: 'flex' }}>
@@ -618,30 +566,42 @@ export default function Upload({ user }) {
         </Box>
 
         <Box sx={{ textAlign: 'right' }}>
-          <Button
-            sx={{ margin: '20px 10px' }}
-            onClick={() => {
-              setData({
-                course: '',
-                id: '',
-                type: 'endsem',
-                sem: 'autumn',
-                year: '2021',
-                desc: ''
-              });
-              setFile(null);
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            sx={{ margin: '20px 10px' }}
-            onClick={() => submitHandler()}
-            disabled={!enableButton}
-          >
-            Submit
-          </Button>
+          {' '}
+          {isUploading ? (
+            <Box sx={{ width: '100%' }}>
+              <LinearProgress />
+            </Box>
+          ) : (
+            <>
+              <Button
+                sx={{ margin: '20px 10px' }}
+                onClick={() => {
+                  setData({
+                    course: '',
+                    id: '',
+                    type: 'endsem',
+                    sem: 'autumn',
+                    year: '2021',
+                    desc: ''
+                  });
+                  setFile(null);
+                }}
+              >
+                Reset
+              </Button>
+              <Button
+                variant="contained"
+                sx={{ margin: '20px 10px' }}
+                onClick={() => {
+                  setUploading(true);
+                  submitHandler();
+                }}
+                disabled={!enableButton}
+              >
+                Submit
+              </Button>
+            </>
+          )}
         </Box>
       </Container>
     </Page>

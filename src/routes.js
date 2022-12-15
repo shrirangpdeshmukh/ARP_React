@@ -39,7 +39,7 @@ export default function Router({ user, updateUser, Cookies }) {
     }
   ];
 
-  if (user && user.role === 'admin') {
+  if (user && (user.role === 'admin' || user.role === 'superAdmin')) {
     routes[0].children.push(
       { path: 'admin/unreviewed', element: <AdminUnreviewed /> },
       { path: 'admin/flagged', element: <AdminFlagged /> },
