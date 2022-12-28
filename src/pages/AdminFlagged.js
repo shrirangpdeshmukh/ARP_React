@@ -139,7 +139,7 @@ export default function AdminFlagged() {
     deleteResourcePaper(branch, subjectCode, resourceId)
       .then((response) => {
         console.log(response);
-        if (response.status === 204) {
+        if (response) {
           setServerResponse({ message: 'File Deleted Successfully', severity: 'success' });
           setSnackbarOpen(true);
           const newResoures = [...resources];

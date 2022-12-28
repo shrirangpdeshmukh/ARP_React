@@ -16,10 +16,39 @@ import { db, storage } from '../firebaseConfig';
 
 const MAX_FLAG_NUMBER = 30;
 
+const addSubjectIfNotExistsList = async (branch, subjectCode, subjectName) => {
+  const docRef = doc(db, 'check', 'list');
+  const branches = await getDoc(docRef);
+  const branchesData = branches.data();
+
+  const subjects = branchesData[branch];
+
+  console.log(subjects);
+
+  let flag = false;
+  for (let i = 0; i < subjects.length; i++) {
+    const subCode = subjects[i].substring(0, 7);
+    if (subCode === subjectCode) {
+      flag = true;
+      break;
+    }
+  }
+
+  if (!flag) {
+    console.log(`Adding subject! ${subjectCode}`);
+    // push data to the check collection
+    subjects.push(subjectCode + subjectName);
+    await updateDoc(docRef, {
+      [`${branch}`]: arrayUnion(`${subjectCode}${subjectName}`)
+    });
+    await getAllSubjects();
+  }
+};
+
 export const getResourcesBySubjectCode = async (branch, subjectCode) => {
   const collectionRef = collection(db, 'branches', branch, subjectCode);
-
-  const resources = await getDocs(collectionRef);
+  const queryRef = query(collectionRef, where('review', '==', true));
+  const resources = await getDocs(queryRef);
 
   const resourceList = [];
   resources.forEach((resource) => {
@@ -31,6 +60,8 @@ export const getResourcesBySubjectCode = async (branch, subjectCode) => {
 
 export const getAllSubjects = async () => {
   try {
+    console.log('Get all subjects!');
+
     const searchArray = [];
     const branchSubjectList = [];
 
@@ -177,8 +208,10 @@ export const uploadStudyResource = async (reqBody, branch) => {
   await setDoc(newResourceDocRef, resourceObj);
 
   const branchDocRef = doc(db, 'branches', branch);
-
   await updateDoc(branchDocRef, { lastUpdated: Date.now() });
+
+  await addSubjectIfNotExistsList(branch, reqBody.subjectCode, reqBody.subjectName);
+
   console.log('Done');
   return true;
 };
@@ -187,26 +220,7 @@ export const acceptResource = async (branch, resourceId, reqBody) => {
   const { subjectCode, subjectName } = reqBody;
   const branchName = branch;
 
-  const docRef = doc(db, 'check', 'list');
-  const branches = await getDoc(docRef);
-  const branchesData = branches.data();
-
-  const subjects = branchesData[branchName];
-
-  let flag = false;
-  for (let i = 0; i < subjects.length; i++) {
-    const subCode = subjects[i].substring(0, 7);
-    if (subCode === subjectCode) {
-      flag = true;
-      break;
-    }
-  }
-
-  if (!flag) {
-    // push data to the check collection
-    subjects.push(subjectCode + subjectName);
-    await updateDoc(docRef, { branchName: arrayUnion(`${subjectCode}${subjectName}`) });
-  }
+  await addSubjectIfNotExistsList(branchName, subjectCode, subjectName);
 
   const updateObj = {
     subjectName,
@@ -235,11 +249,12 @@ export const deleteResourcePaper = async (branch, subjectCode, resourceId) => {
   const pos = str.lastIndexOf('/');
   const name = `${subjectCode}:${str.substring(pos + 1)}.pdf`;
 
+  await deleteDoc(resourceDocRef);
+  console.log('Successfully deleted file');
+
   const resourceRef = ref(storage, name);
   await deleteObject(resourceRef);
   console.log('Deleted the file from storage');
 
-  await deleteDoc(resourceDocRef);
-  console.log('Successfully deleted file');
   return true;
 };

@@ -99,10 +99,10 @@ export default function Upload() {
   const acceptReview = () => {
     console.log('Called Accept File');
 
-    const branch = data.id.substring(0, 2);
+    const branch = data.id.trim().toUpperCase().substring(0, 2);
     const body = {
-      subjectName: data.course,
-      subjectCode: data.id.toUpperCase(),
+      subjectName: data.course.trim(),
+      subjectCode: data.id.trim().toUpperCase(),
       semester: data.sem,
       type: data.type,
       year: data.year,
@@ -116,7 +116,7 @@ export default function Upload() {
         setSnackbarOpen(true);
         setTimeout(() => {
           navigate('/admin/unreviewed');
-        }, 5000);
+        }, 2000);
       })
       .catch((error) => {
         console.error(error);
@@ -136,8 +136,8 @@ export default function Upload() {
           setServerResponse({ message: 'File Deleted Successfully', severity: 'success' });
           setSnackbarOpen(true);
           setTimeout(() => {
-            navigate('/');
-          }, 5000);
+            navigate('/admin/unreviewed');
+          }, 2000);
         }
       })
       .catch((err) => {

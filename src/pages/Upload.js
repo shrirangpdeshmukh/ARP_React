@@ -152,9 +152,9 @@ export default function Upload({ user }) {
 
     const body = {
       emailId: user.email,
-      subjectName: data.course,
+      subjectName: data.course.trim(),
       semester: data.sem,
-      subjectCode: data.id.toUpperCase(),
+      subjectCode: data.id.toUpperCase().trim(),
       type: data.type,
       year: data.year,
       downloadLink: URL,
@@ -492,7 +492,7 @@ export default function Upload({ user }) {
               </TextField>
             </Box>
 
-            {['tutorial', 'others'].includes(data.type) && (
+            {['tutorial', 'quiz', 'others'].includes(data.type) && (
               <Box py={1}>
                 <TextField
                   label="Description"

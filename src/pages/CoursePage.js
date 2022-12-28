@@ -103,6 +103,7 @@ export default function CoursePage(props) {
     try {
       const data = await getResourcesBySubjectCode(branch, id);
       setResources(data);
+      setLoadMsg(null);
     } catch (err) {
       console.log(err);
       window.alert(err.message);
