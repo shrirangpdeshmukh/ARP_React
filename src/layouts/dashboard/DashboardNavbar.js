@@ -11,7 +11,7 @@ import { MHidden } from '../../components/@material-extend';
 //
 import Searchbar from './Searchbar';
 import AccountPopover from './AccountPopover';
-import { googleLogin, googleLogout, getUserRole } from '../../API/auth';
+import { googleLogin, googleLogout, getUserRole, getRedirectResponse } from '../../API/auth';
 
 // ----------------------------------------------------------------------
 
@@ -53,17 +53,29 @@ export default function DashboardNavbar({ onOpenSidebar, updateUser, Cookies }) 
     updateUser(user);
   }, [user]);
 
-  const login = async () => {
+  useEffect(() => {
+    redirectedResult();
+  }, []);
+
+  const redirectedResult = async () => {
     try {
       setIsLoading(true);
-      const res = await googleLogin();
-      if (!res) {
-        throw new Error("Couldn't login");
-      }
-      console.log({ res });
-      const resUser = res.user;
-
+      const data = await getRedirectResponse();
+      console.log({ data });
+      const resUser = data.user;
       console.log({ resUser });
+      if (resUser) {
+        await setResult(resUser);
+      }
+    } catch (e) {
+      console.log(e);
+      window.alert('Something went wrong with the Login!');
+      setIsLoading(true);
+    }
+  };
+
+  const setResult = async (resUser) => {
+    try {
       const userRole = await getUserRole(resUser.email);
 
       const userObject = {
@@ -86,6 +98,26 @@ export default function DashboardNavbar({ onOpenSidebar, updateUser, Cookies }) 
       });
 
       setIsLoading(false);
+    } catch (err) {
+      console.log(err);
+      window.alert('Something went wrong with the Login!');
+      setIsLoading(false);
+    }
+  };
+
+  const login = async () => {
+    try {
+      setIsLoading(true);
+      const res = await googleLogin();
+      if (!res) {
+        throw new Error("Couldn't login");
+      }
+      const data = await getRedirectResponse();
+      console.log({ res, data });
+      const resUser = data.user;
+
+      console.log({ resUser });
+      await setResult(resUser);
     } catch (err) {
       console.log(err);
       window.alert('Something went wrong with the Login!');
