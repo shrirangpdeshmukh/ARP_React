@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 // react
 import { useState, useEffect } from 'react';
 //
@@ -12,7 +11,6 @@ import {
   Card,
   Table,
   Stack,
-  Button,
   TableRow,
   TableHead,
   TableBody,
@@ -36,6 +34,7 @@ import Scrollbar from '../components/Scrollbar';
 import SearchNotFound from '../components/SearchNotFound';
 
 import { branches } from '../assets/data/branchData';
+import useSubjectsContext from '../hooks/useSubjectsContext';
 // import courseData from '../assets/data/courseData.json';
 
 // ----------------------------------------------------------------------
@@ -71,6 +70,7 @@ const TABLE_HEAD = [
 
 export default function BranchPage() {
   const navigate = useNavigate();
+  const { branchSubjectList } = useSubjectsContext();
 
   const [fetched, setFetched] = useState(false);
 
@@ -119,11 +119,28 @@ export default function BranchPage() {
     if (courses && courses.length > 0) setFetched(true);
   }, [courses]);
 
-  const getCourses = (branch) => {
-    const courseData = JSON.parse(localStorage.getItem('branchSubjectList'));
+  const handleSBS = (courseData) => {
+    const branchesInSBS = ['MA', 'CY', 'PH'];
+    const SBSBranches = filter(courseData, (el) => branchesInSBS.includes(el.branchName));
+    const SBSCourses = [];
+    SBSBranches.forEach((branch) => {
+      branch.data.forEach((course) => {
+        SBSCourses.push(course);
+      });
+    });
 
-    const index = courseData.findIndex((el) => el.branchName === branch);
-    if (index >= 0) setCourses(courseData[index].data);
+    return SBSCourses;
+  };
+
+  const getCourses = (branch) => {
+    const courseData = branchSubjectList;
+    if (branch === 'SBS') {
+      const SBSCourses = handleSBS(courseData);
+      setCourses(SBSCourses);
+    } else {
+      const index = courseData.findIndex((el) => el.branchName === branch);
+      if (index >= 0) setCourses(courseData[index].data);
+    }
     setFetched(true);
   };
 

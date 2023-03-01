@@ -24,7 +24,7 @@ export default function DashboardApp({ user }) {
       <Container maxWidth="xl">
         <Box sx={{ pb: 5 }}>
           <Typography variant="h4">
-            Hi {user ? Capitalize(user.name) : ''}{' '}
+            Hi {user ? Capitalize(user.displayName) : ''}{' '}
             <span role="img" style={{ fontSize: '2rem' }} aria-label="hi">
               👋
             </span>

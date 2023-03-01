@@ -158,7 +158,7 @@ export default function NavSection({ navConfig, user, ...other }) {
   const { pathname } = useLocation();
   const match = (path) => (path ? !!matchPath({ path, end: false }, pathname) : false);
 
-  const userRole = user && user.role ? user.role : 'user';
+  const userRole = user?.role ? user.role : 'user';
 
   return (
     <Box {...other}>

@@ -1,32 +1,28 @@
-import PropTypes from 'prop-types';
 // react
 import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
 import DashboardLayout from './layouts/dashboard';
-//
+// pages
 import DashboardApp from './pages/DashboardApp';
 import CoursePage from './pages/CoursePage';
 import BranchPage from './pages/BranchPage';
 import AdminUnreviewed from './pages/AdminUnreviewed';
 import AdminFlagged from './pages/AdminFlagged';
 import AdminManage from './pages/AdminManage';
-// import AdminAddCourse from './pages/AdminAddCourse';
 import ReviewPaper from './pages/ReviewPaper';
 import Upload from './pages/Upload';
 import NotFound from './pages/Page404';
-
+// contexts
+import useAuthContext from './hooks/useAuthContext';
 // ----------------------------------------------------------------------
 
-Router.propTypes = {
-  user: PropTypes.object,
-  updateUser: PropTypes.func
-};
+export default function Router() {
+  const { user } = useAuthContext();
 
-export default function Router({ user, updateUser, Cookies }) {
   const routes = [
     {
       path: '/',
-      element: <DashboardLayout user={user} updateUser={updateUser} Cookies={Cookies} />,
+      element: <DashboardLayout user={user} />,
       children: [
         { element: <Navigate to="/app" replace /> },
         { path: 'app', element: <DashboardApp user={user} /> },
@@ -43,7 +39,6 @@ export default function Router({ user, updateUser, Cookies }) {
     routes[0].children.push(
       { path: 'admin/unreviewed', element: <AdminUnreviewed /> },
       { path: 'admin/flagged', element: <AdminFlagged /> },
-      // { path: 'admin/addCourse', element: <AdminAddCourse /> },
       { path: 'admin/review/:id', element: <ReviewPaper /> }
     );
   }

@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 
 import Scrollbar from '../../components/Scrollbar';
+import useSubjectsContext from '../../hooks/useSubjectsContext';
 
 // ----------------------------------------------------------------------
 
@@ -73,7 +74,7 @@ const SearchResultsStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function Searchbar() {
-  const searchArray = JSON.parse(localStorage.getItem('searchArray'));
+  const { searchArray } = useSubjectsContext();
 
   const [isOpen, setOpen] = useState(false);
 

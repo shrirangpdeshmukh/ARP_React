@@ -28,6 +28,7 @@ import FilePreview from '../components/_dashboard/upload/FilePreview';
 // firebase
 import { storage } from '../firebaseConfig';
 import { uploadStudyResource } from '../API/studyResources';
+import useSubjectsContext from '../hooks/useSubjectsContext';
 
 // ---------------------------------------------------------
 
@@ -75,7 +76,7 @@ export default function Upload({ user }) {
 
   const [isUploading, setUploading] = useState(false);
 
-  const searchArray = JSON.parse(localStorage.getItem('searchArray'));
+  const { searchArray } = useSubjectsContext();
 
   const optionsArray = [];
 

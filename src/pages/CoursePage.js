@@ -24,14 +24,15 @@ import { TypeCard, FlagDialog } from '../components/_dashboard/course_page';
 // import USERLIST from '../_mocks_/user';
 
 import { branches } from '../assets/data/branchData';
-// import courseData from '../assets/data/courseData.json';
 import { getResourcesBySubjectCode } from '../API/studyResources';
+import useSubjectsContext from '../hooks/useSubjectsContext';
 // ----------------------------------------------------------------------
 
 // ----------------------------------------------------------------------
 
-export default function CoursePage(props) {
+export default function CoursePage() {
   const navigate = useNavigate();
+  const { branchSubjectList } = useSubjectsContext();
   const globalCourseCode = useParams().code;
 
   const [courseCode, setCourseCode] = useState('Course');
@@ -82,7 +83,7 @@ export default function CoursePage(props) {
   };
 
   const checkCourse = (branch, id) => {
-    const courseData = JSON.parse(localStorage.getItem('branchSubjectList'));
+    const courseData = branchSubjectList;
 
     let index = -1;
     let ind = -1;

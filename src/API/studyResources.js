@@ -93,6 +93,8 @@ export const getAllSubjects = async () => {
 
     localStorage.setItem('searchArray', JSON.stringify(searchArray));
     localStorage.setItem('branchSubjectList', JSON.stringify(branchSubjectList));
+
+    return { searchArray, branchSubjectList };
   } catch (e) {
     console.log(e);
     window.alert('Something went wrong with fetching the resources!');

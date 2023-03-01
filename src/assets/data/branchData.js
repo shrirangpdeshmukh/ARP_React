@@ -47,7 +47,14 @@ export const branches = [
     subtitle: 'Metallurgy and Minerals Engineering',
     code: 'ML'
   },
-  { show: true, color: 'info', icon: 'sbs', title: 'SBS', subtitle: 'School of Basic Sciences' },
+  {
+    show: true,
+    color: 'info',
+    icon: 'sbs',
+    title: 'SBS',
+    subtitle: 'School of Basic Sciences',
+    code: 'SBS'
+  },
   {
     show: true,
     color: 'success',
